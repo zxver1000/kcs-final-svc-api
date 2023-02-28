@@ -69,6 +69,13 @@ class MicroApplication {
         port: this.PORT,
       },
     });
+    this.server.connectMicroservice({
+      transport: Transport.REDIS,
+      options: {
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+      },
+    });
     await this.server.startAllMicroservices();
     await this.server.listen(this.PORT);
   }
