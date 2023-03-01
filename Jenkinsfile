@@ -4,6 +4,7 @@ pipeline {
       label 'jenkins-k8s-agent'
     }
   }
+  tools {nodejs "nodejs-16.16.0"}
   stages {
     stage('Install Dependencies') {
       steps {
