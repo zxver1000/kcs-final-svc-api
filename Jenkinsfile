@@ -14,7 +14,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        echo 'Unit Testing....'
+        echo 'Unit Test Starting...'
         sh '''
         npm test
         '''
