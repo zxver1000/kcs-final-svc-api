@@ -1,6 +1,18 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { FilesMicroServiceDto } from '../data/dto/file-ms.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiOperation } from '@nestjs/swagger';
 import { FileServerService } from '../service/file-server.service';
+import { CurrentUser } from 'src/common/decorator/user.decorator';
+import { Users } from 'src/user/data/user.schema';
 
 @Controller('files')
 export class FileServerController {
@@ -12,9 +24,28 @@ export class FileServerController {
     return result;
   }
 
-  @Post()
-  uploadFileHttp(@Body() data: FilesMicroServiceDto) {
-    console.log('Upload requested', data);
-    return this.fileService.uploadFile(data);
+  @ApiOperation({ summary: '글 파일 업로드 - 이미지' })
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('image', 10))
+  uploadFile(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @CurrentUser() user: Users,
+  ) {
+    return this.fileService.uploadFile(files, user);
   }
+
+  /* files
+[
+  {
+    fieldname: 'image',
+    originalname: '스크린샷 2023-02-23 오후 4.47.09.png',
+    encoding: '7bit',
+    mimetype: 'image/png',
+    destination: '/Users/eugene/Playground/NodeJS/nestjs/kcs/api-gateway/dist/common/uploads/board',
+    filename: '스크린샷 2023-02-23 오후 4.47.091678079902441.png',
+    path: '/Users/eugene/Playground/NodeJS/nestjs/kcs/api-gateway/dist/common/uploads/board/스크린샷 2023-02-23 오후 4.47.091678079902441.png',
+    size: 860647
+  }
+]
+    */
 }
