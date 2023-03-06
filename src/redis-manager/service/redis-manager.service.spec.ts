@@ -1,9 +1,9 @@
 import { CacheModule, CACHE_MANAGER } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { RedisManagerService } from './redis-manager.service';
-import * as redisStore from 'cache-manager-redis-store';
-import { RedisManagerModule } from './redis-manager.module';
+import * as redisStore from 'cache-manager-ioredis';
+import { RedisManagerModule } from '../redis-manager.module';
 import { Cache } from 'cache-manager';
 
 const mockCacheManager = {

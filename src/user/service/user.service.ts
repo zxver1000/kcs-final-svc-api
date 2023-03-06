@@ -1,6 +1,5 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { Cache } from 'cache-manager';
-import { RedisManagerService } from 'src/redis-manager/redis-manager.service';
+import { Injectable } from '@nestjs/common';
+import { RedisManagerService } from '../../redis-manager/service/redis-manager.service';
 
 @Injectable()
 export class UserService {
@@ -10,7 +9,7 @@ export class UserService {
 
     //* If not exist on REdis, find on DB, and add it to Redis, and return it
     const key = `user/${userid}`;
-    return await this.redisService.get(key);
+    return await this.redisService.getCache(key);
   }
 
   async setUser(userid: string) {
@@ -19,6 +18,6 @@ export class UserService {
     const userObject = {
       id: 'test',
     };
-    return await this.redisService.set(key, userObject);
+    return await this.redisService.setCache(key, userObject);
   }
 }

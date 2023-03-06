@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { RedisManagerModule } from 'src/redis-manager/redis-manager.module';
-import { RedisManagerService } from 'src/redis-manager/redis-manager.service';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { RedisManagerModule } from '../redis-manager/redis-manager.module';
+import { UserController } from './controller/user.controller';
+import { UserService } from './service/user.service';
 
 @Module({
   imports: [ConfigModule.forRoot(), RedisManagerModule],
