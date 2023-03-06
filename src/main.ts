@@ -27,17 +27,17 @@ class Application {
     }
 
     if (!process.env.JWT_SECRET) this.logger.error('Set "JWT_SECRET" env');
-    if (!process.env.UserHost)
-      this.logger.error('Set "MicroService.UserHost" env');
-    if (!process.env.UserPort)
-      this.logger.error('Set "MicroService.UserPort" env');
+    if (!process.env.FileServerHost)
+      this.logger.error('Set "MicroService.FileServerHost" env');
+    if (!process.env.FileServerPort)
+      this.logger.error('Set "MicroService.FileServerHost" env');
 
     try {
-      const userPort = parseInt(process.env.UserPort);
-      if (isNaN(userPort))
-        throw new Error('Set "MicroService.UserPort" as number');
+      const fileServerPort = parseInt(process.env.FileServerPort);
+      if (isNaN(fileServerPort))
+        throw new Error('Set "MicroService.FileServerPort" as number');
     } catch (err) {
-      throw new Error('Set "MicroService.UserPort" as number');
+      throw new Error('Set "MicroService.FileServerPort" as number');
     }
 
     this.DEV_MODE = process.env.NODE_ENV === 'production' ? false : true;
