@@ -1,5 +1,5 @@
 import { Transport } from '@nestjs/microservices';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
@@ -45,6 +45,7 @@ class MicroApplication {
     });
 
     this.logger.log('Setting Logger Middleware...');
+    this.server.useGlobalPipes(new ValidationPipe());
 
     //* Set Global Guard
     // this.server.useGlobalGuards(new SelectableJwtAuthGuard(new Reflector()));

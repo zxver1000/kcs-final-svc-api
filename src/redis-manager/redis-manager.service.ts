@@ -1,5 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { FilesMicroServiceDto } from 'src/file-server/data/dto/file-ms.dto';
 
 @Injectable()
 export class RedisManagerService {
@@ -12,7 +13,7 @@ export class RedisManagerService {
    * @param key Key to identify the object
    * @param value Objet for the key
    */
-  async setCache(key: string, value: object): Promise<string> {
+  async setCache(key: string, value: FilesMicroServiceDto): Promise<string> {
     await this.cacheManager.set(key, value);
     return 'OK';
   }
@@ -23,8 +24,13 @@ export class RedisManagerService {
    * @returns object when the item exist in Redis
    * @returns undefined when the item is not exist in Redis
    */
-  async getCache(key: string): Promise<object | undefined> {
-    return await this.cacheManager.get(key);
+  async getCache(key: string): Promise<FilesMicroServiceDto | undefined> {
+    const result = await this.cacheManager.get(key);
+    if (!result) {
+      return null;
+    }
+
+    return new FilesMicroServiceDto(result);
   }
 
   /**
