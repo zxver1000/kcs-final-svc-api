@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { timeout } from 'rxjs';
-import { Users } from 'src/user/data/user.schema';
-import { FilesMicroServiceDto } from '../data/dto/file-ms.dto';
+import { User } from '../user/data/user.schema';
 
 @Injectable()
 export class FileServerService {
@@ -29,7 +28,7 @@ export class FileServerService {
       .pipe(timeout(this.gatewayTimeout));
   }
 
-  async uploadFile(files: Express.Multer.File[], user: Users) {
+  async uploadFile(files: Express.Multer.File[], user: User) {
     return this.fileClient.send<Express.Multer.File[]>(
       { cmd: 'create_file' },
       // { user, files },

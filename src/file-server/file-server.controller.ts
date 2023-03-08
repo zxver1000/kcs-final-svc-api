@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation } from '@nestjs/swagger';
-import { FileServerService } from '../service/file-server.service';
+import { FileServerService } from './file-server.service';
 import { CurrentUser } from 'src/common/decorator/user.decorator';
-import { Users } from 'src/user/data/user.schema';
+import { User } from 'src/user/data/user.schema';
 
 @Controller('files')
 export class FileServerController {
@@ -29,7 +29,7 @@ export class FileServerController {
   @UseInterceptors(FilesInterceptor('image', 10))
   uploadFile(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @CurrentUser() user: Users,
+    @CurrentUser() user: User,
   ) {
     return this.fileService.uploadFile(files, user);
   }

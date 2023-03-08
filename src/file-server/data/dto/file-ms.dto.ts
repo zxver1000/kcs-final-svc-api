@@ -1,16 +1,16 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-export class FilesMicroServiceDto {
+export class FileInfoMicroserviceDto {
   @IsString()
   @IsNotEmpty()
   owner: string;
 
   @IsString()
   @IsNotEmpty()
-  fileid: string;
+  id: string;
 
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts
-  constructor(partial: Partial<FilesMicroServiceDto>) {
+  constructor(partial: Partial<FileInfoMicroserviceDto>) {
     Object.assign(this, partial);
   }
 }

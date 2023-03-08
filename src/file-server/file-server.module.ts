@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { FileServerController } from './controller/file-server.controller';
-import { FileServerService } from './service/file-server.service';
+import { FileServerController } from './file-server.controller';
+import { FileServerService } from './file-server.service';
 
 @Module({
   imports: [
