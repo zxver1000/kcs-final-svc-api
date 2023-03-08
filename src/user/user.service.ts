@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { RedisManagerService } from '../../redis-manager/service/redis-manager.service';
-import { UserCreateDTo } from '../dto/UserCreateDTO';
-import { UserMicroServiceDTO } from '../dto/UserDto';
-import { UserRepository } from '../repository/user.repository';
+import { RedisManagerService } from '../redis-manager/redis-manager.service';
+import { UserCreateDto } from './data/dto/user-create.dto';
+import { UserRepository } from './data/user.repository';
 
 @Injectable()
 export class UserService {
+  private logger = new Logger('UserService');
   constructor(
     private readonly redisService: RedisManagerService,
     private readonly userRepository: UserRepository,
@@ -18,15 +18,13 @@ export class UserService {
     return await this.redisService.getCache(key);
   }
 
-  async setUser(userid: string) {
+  async createUser(user: UserCreateDto) {
     //* Just Add it on DB
-    const key = `user/${userid}`;
-    const userObject = {
-      id: 'test',
-    };
-    return await this.redisService.setCache(key, userObject);
+    const key = `user/${user.email}`;
+
+    return await this.redisService.setCache(key, user);
   }
-  async createusers(usercreatedto: UserCreateDTo) {
+  async createusers(usercreatedto: UserCreateDto) {
     await this.userRepository.createuser(usercreatedto);
     return 'ok';
   }

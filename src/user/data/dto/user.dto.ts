@@ -1,14 +1,14 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { UserSchema } from './User.Schema';
+import { User } from '../user.schema';
 
-export class UserMicroServiceDTO extends PickType(UserSchema, [
+export class UserMicroserviceDto extends PickType(User, [
   'email',
   'nickname',
   'profileimage',
 ] as const) {
   @ApiProperty({
     example: 'ObjectID',
-    description: 'Mongo ObjectID'
+    description: 'Mongo ObjectID',
   })
   id: string;
 }

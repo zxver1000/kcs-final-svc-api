@@ -1,23 +1,17 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { MicroserviceDataWrapper } from '../common/ microservice-data-wrapper';
-import {
-  UserSchema,
-  UserReadOnlySchema,
-  userDocument,
-} from '../dto/User.Schema';
-import { UserCreateDTo } from '../dto/UserCreateDTO';
-import { UserMicroServiceDTO } from '../dto/UserDto';
+import { MicroserviceDataWrapper } from '../../common/data/microservice-data-wrapper';
+import { UserCreateDto } from './dto/user-create.dto';
+import { UserMicroserviceDto } from './dto/user.dto';
+import { User } from './user.schema';
 
 @Injectable()
 export class UserRepository {
   private logger = new Logger('User-Repository');
-  constructor(
-    @InjectModel(UserSchema.name) private userModel: Model<userDocument>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async createuser(UserCreateDTO: UserCreateDTo) {
+  async createuser(UserCreateDTO: UserCreateDto) {
     const users = new this.userModel(UserCreateDTO);
 
     console.log(users);
@@ -36,12 +30,12 @@ export class UserRepository {
   async getUserFromDB(userid: string): Promise<MicroserviceDataWrapper> {
     let user;
     try {
-      const user: UserMicroServiceDTO = (await this.userModel.findOne({
+      const user: UserMicroserviceDto = (await this.userModel.findOne({
         _id: '6405a394abdb68d092602dba',
-      })) as UserMicroServiceDTO;
+      })) as UserMicroserviceDto;
 
       if (!!user) {
-        //user = user as UserMicroServiceDTO;
+        //user = user as UserMicroserviceDto;
         return {
           success: true,
           code: HttpStatus.OK,

@@ -1,6 +1,6 @@
+import { User } from '../user/data/user.schema';
 import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { UserMicroServiceDTO } from 'src/user/dto/UserDto';
 
 @Injectable()
 export class RedisManagerService {
@@ -15,7 +15,7 @@ export class RedisManagerService {
    * @param key Key to identify the object
    * @param value Objet for the key
    */
-  async setCache(key: string, value: object): Promise<string> {
+  async setCache(key: string, value: User): Promise<string> {
     await this.cacheManager.set(key, value);
     return 'OK';
   }
@@ -26,7 +26,7 @@ export class RedisManagerService {
    * @returns object when the item exist in Redis
    * @returns undefined when the item is not exist in Redis
    */
-  async getCache(key: string): Promise<UserMicroServiceDTO | null> {
+  async getCache(key: string): Promise<User | null> {
     try {
       return await this.cacheManager.get(key);
     } catch (e) {
