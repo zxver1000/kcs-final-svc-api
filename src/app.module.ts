@@ -5,9 +5,18 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { RedisManagerModule } from './redis-manager/redis-manager.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, HealthCheckModule],
+  imports: [
+    ConfigModule.forRoot(),
+    UserModule,
+    HealthCheckModule,
+    MongooseModule.forRoot(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
