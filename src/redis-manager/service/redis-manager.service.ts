@@ -1,12 +1,15 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { UserMicroServiceDTO } from 'src/user/dto/UserDto';
 
 @Injectable()
 export class RedisManagerService {
+  private logger = new Logger('User - Redis');
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
+
   /**
    * Set the object in Redis
    * @param key Key to identify the object
@@ -23,8 +26,13 @@ export class RedisManagerService {
    * @returns object when the item exist in Redis
    * @returns undefined when the item is not exist in Redis
    */
-  async getCache(key: string): Promise<object | undefined> {
-    return await this.cacheManager.get(key);
+  async getCache(key: string): Promise<UserMicroServiceDTO | null> {
+    try {
+      return await this.cacheManager.get(key);
+    } catch (e) {
+      this.logger.error('Redis can not connect Check Redis [/]');
+      return undefined;
+    }
   }
 
   /**
