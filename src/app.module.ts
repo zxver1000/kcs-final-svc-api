@@ -12,7 +12,6 @@ import { MongooseModule } from '@nestjs/mongoose';
     ConfigModule.forRoot(),
     UserModule,
     HealthCheckModule,
-
     MongooseModule.forRoot(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
