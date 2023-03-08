@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserCreateDto } from './data/dto/user-create.dto';
-import { CurrentUser } from 'src/common/decorator/user.decorator';
+import { CurrentUser } from '../common/decorator/user.decorator';
 
 @Controller('user')
 export class UserController {

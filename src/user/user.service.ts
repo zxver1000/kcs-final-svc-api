@@ -23,17 +23,6 @@ export class UserService {
     if (isNaN(this.gatewayTimeout)) this.gatewayTimeout = 5000;
   }
 
-  getUser() {
-    return this.userClient
-      .send(
-        {
-          cmd: 'read_user',
-        },
-        {},
-      )
-      .pipe(timeout(this.gatewayTimeout));
-  }
-
   async getUserById(
     userid: string,
   ): Promise<UserMicroserviceDataWrapper | null> {
