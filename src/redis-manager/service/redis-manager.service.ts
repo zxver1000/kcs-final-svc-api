@@ -4,7 +4,7 @@ import { UserMicroServiceDTO } from 'src/user/dto/UserDto';
 
 @Injectable()
 export class RedisManagerService {
-  private logger = new Logger('User - Redis');
+  private logger = new Logger('RedisManagerService');
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
