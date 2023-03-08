@@ -1,5 +1,6 @@
-import { Controller } from '@nestjs/common';
+import { Controller, HttpStatus } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { MicroserviceDataWrapper } from '../common/data/microservice-data-wrapper';
 import { UserCreateDto } from './data/dto/user-create.dto';
 import { UserMicroserviceDto } from './data/dto/user.dto';
 import { UserService } from './user.service';
@@ -9,15 +10,104 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @MessagePattern({ cmd: 'read_user' })
-  getUser(@Payload('id') id: string) {
-    return 'OK';
-    //    return this.userService.getUser('user/test');
+  async getUserById(
+    @Payload('userid') id: string,
+  ): Promise<MicroserviceDataWrapper> {
+    const userResult = await this.userService.getUserById(id);
+    const success = userResult !== null;
+    const code = success ? HttpStatus.OK : HttpStatus.NO_CONTENT;
+
+    if (typeof userResult === 'number') {
+      return {
+        success: false,
+        code: code,
+      };
+    }
+
+    const userMsData = new UserMicroserviceDto(userResult);
+    const result = [userMsData];
+    return {
+      success,
+      code,
+      result,
+    };
+  }
+
+  @MessagePattern({ cmd: 'read_user_by_email' })
+  async getUserByEmail(
+    @Payload('email') email: string,
+  ): Promise<MicroserviceDataWrapper> {
+    const userResult = await this.userService.getUserByEmail(email);
+    const success = userResult !== null;
+    const code = success ? HttpStatus.OK : HttpStatus.NO_CONTENT;
+
+    if (typeof userResult === 'number') {
+      return {
+        success: false,
+        code: code,
+      };
+    }
+
+    const userMsData = new UserMicroserviceDto(userResult);
+    const result = [userMsData];
+    return {
+      success,
+      code,
+      result,
+    };
+  }
+
+  @MessagePattern({ cmd: 'auth_user' })
+  async getUserByEmailAndPasswordForAuth(
+    @Payload('password') password: string,
+    @Payload('email') email: string,
+  ): Promise<MicroserviceDataWrapper> {
+    const userResult = await this.userService.getUserByEmailAndPasswordForAuth(
+      password,
+      email,
+    );
+
+    const success = userResult !== null;
+    const code = success ? HttpStatus.OK : HttpStatus.NO_CONTENT;
+
+    if (typeof userResult === 'number') {
+      return {
+        success: false,
+        code: code,
+      };
+    }
+
+    const userMsData = new UserMicroserviceDto(userResult);
+    const result = [userMsData];
+    return {
+      success,
+      code,
+      result,
+    };
   }
 
   @MessagePattern({ cmd: 'create_user' })
-  createUser(@Payload('user') user: UserCreateDto) {
-    return 'OK';
-    //    return this.userService.getUser('user/test');
+  async createUser(
+    @Payload('user') user: UserCreateDto,
+  ): Promise<MicroserviceDataWrapper> {
+    const userResult = await this.userService.createUser(user);
+    const success = userResult !== null;
+    const code = success ? HttpStatus.CREATED : HttpStatus.NO_CONTENT;
+
+    if (typeof userResult === 'number') {
+      return {
+        success: false,
+        code: userResult,
+      };
+    }
+
+    const userMsData = new UserMicroserviceDto(userResult);
+    const result = [userMsData];
+    return {
+      success,
+      code,
+      result,
+    };
   }
 
   @MessagePattern({ cmd: 'update_user' })

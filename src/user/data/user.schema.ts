@@ -1,6 +1,7 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
 import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 const options: SchemaOptions = {
   //* MongoDB 아래에 생성될 collection 이름 지정
@@ -12,6 +13,11 @@ const options: SchemaOptions = {
 
 @Schema(options)
 export class User extends Document {
+  @ApiProperty({
+    example: 'user@mail.com',
+    description: 'Email Address',
+    required: true,
+  })
   @Prop({
     require: true,
     unique: true,
@@ -21,6 +27,11 @@ export class User extends Document {
   @IsNotEmpty()
   email: string;
 
+  @ApiProperty({
+    example: 'Eugene',
+    description: 'User Name',
+    required: true,
+  })
   @Prop({
     require: true,
   })
@@ -28,6 +39,11 @@ export class User extends Document {
   @IsNotEmpty()
   nickname: string;
 
+  @ApiProperty({
+    example: 'a1s2d3',
+    description: 'Password',
+    required: true,
+  })
   @Prop({
     require: true,
   })
@@ -39,6 +55,12 @@ export class User extends Document {
   @IsString()
   profileimage: string;
 
+  @ApiProperty({
+    example: 'true',
+    description: 'Whether email have validated or not',
+    required: true,
+    default: false,
+  })
   @Prop()
   @IsBoolean()
   emailValid: boolean;
@@ -65,5 +87,8 @@ _UserSchema.virtual('readOnlyData').get(function (this: User) {
     profileimage: this.profileimage,
   };
 });
+
+_UserSchema.set('toObject', { virtuals: true });
+_UserSchema.set('toJSON', { virtuals: true });
 
 export const UserSchema = _UserSchema;
