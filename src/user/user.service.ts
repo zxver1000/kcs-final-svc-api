@@ -31,7 +31,7 @@ export class UserService {
     return HttpStatus.NO_CONTENT;
   }
 
-  async getUserByEmail(email: string): Promise<UserMicroserviceDto | number> {
+  async resetPassword(email: string): Promise<UserMicroserviceDto | number> {
     const result = await this.userRepository.findByEmail(email);
     this.logger.log('getUserByEmail.result: ', result);
     if (!result) {
@@ -41,14 +41,17 @@ export class UserService {
     if (typeof result === 'number') {
       return result;
     }
-
+    const alter_password = Math.random().toString(36).slice(2);
+    result.password = alter_password;
+    result.save();
+    //이메일 보내기
     if (!!result) {
       return new UserMicroserviceDto(result);
     }
     return HttpStatus.NO_CONTENT;
   }
 
-  async getUserByEmailAndPasswordForAuth(
+  async login(
     password: string,
     email: string,
   ): Promise<UserMicroserviceDto | number> {
@@ -110,10 +113,9 @@ export class UserService {
     return HttpStatus.CONFLICT;
   }
 
-  async logIn() {}
+  //회원가입
   async signUp() {}
   async modifyUserInformation() {}
 
-  async findPassword() {}
   async showMyPage(userid: string) {}
 }

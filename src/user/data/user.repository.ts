@@ -26,7 +26,6 @@ export class UserRepository {
       if (e.message.includes('E11000')) {
         return HttpStatus.CONFLICT;
       }
-
       return HttpStatus.INTERNAL_SERVER_ERROR;
     }
   }

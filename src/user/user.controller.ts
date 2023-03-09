@@ -1,4 +1,4 @@
-import { Controller, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { MicroserviceDataWrapper } from '../common/data/microservice-data-wrapper';
 import { UserCreateDto } from './data/dto/user-create.dto';
@@ -16,7 +16,6 @@ export class UserController {
     const userResult = await this.userService.getUserById(id);
     const success = userResult !== null;
     const code = success ? HttpStatus.OK : HttpStatus.NO_CONTENT;
-
     if (typeof userResult === 'number') {
       return {
         success: false,
@@ -34,21 +33,26 @@ export class UserController {
   }
 
   @MessagePattern({ cmd: 'read_user_by_email' })
-  async getUserByEmail(
+  async resetPassword(
     @Payload('email') email: string,
   ): Promise<MicroserviceDataWrapper> {
-    const userResult = await this.userService.getUserByEmail(email);
+    const userResult = await this.userService.resetPassword(email);
     const success = userResult !== null;
     const code = success ? HttpStatus.OK : HttpStatus.NO_CONTENT;
 
+    //이메일로 아이디줘야됨
     if (typeof userResult === 'number') {
       return {
         success: false,
         code: code,
       };
     }
-
     const userMsData = new UserMicroserviceDto(userResult);
+
+    // 유저거ㅏ져온거까지가능
+    // 수정해야됨
+    // save
+
     const result = [userMsData];
     return {
       success,
@@ -58,14 +62,11 @@ export class UserController {
   }
 
   @MessagePattern({ cmd: 'auth_user' })
-  async getUserByEmailAndPasswordForAuth(
+  async logIn(
     @Payload('password') password: string,
     @Payload('email') email: string,
   ): Promise<MicroserviceDataWrapper> {
-    const userResult = await this.userService.getUserByEmailAndPasswordForAuth(
-      password,
-      email,
-    );
+    const userResult = await this.userService.login(password, email);
 
     const success = userResult !== null;
     const code = success ? HttpStatus.OK : HttpStatus.NO_CONTENT;
@@ -87,7 +88,7 @@ export class UserController {
   }
 
   @MessagePattern({ cmd: 'create_user' })
-  async createUser(
+  async signUp(
     @Payload('user') user: UserCreateDto,
   ): Promise<MicroserviceDataWrapper> {
     const userResult = await this.userService.createUser(user);
@@ -111,7 +112,7 @@ export class UserController {
   }
 
   @MessagePattern({ cmd: 'update_user' })
-  updateUser(@Payload('user') user: UserCreateDto) {
+  updateUserInfo(@Payload('user') user: UserCreateDto) {
     return 'OK';
     //    return this.userService.getUser('user/test');
   }
@@ -120,5 +121,14 @@ export class UserController {
   deleteUser(@Payload('user') user: UserMicroserviceDto) {
     return 'OK';
     //    return this.userService.getUser('user/test');
+  }
+
+  @Get('random')
+  async random() {
+    const k = Math.random().toString(36).slice(2);
+
+    console.log(k);
+    console.log('fds');
+    return k;
   }
 }
