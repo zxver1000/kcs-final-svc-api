@@ -1,7 +1,7 @@
 pipeline {
   environment { 
     dockerRepository = "devwhoan/kcs-apigateway"
-    dockerCredential = credentials('docker')
+    dockerCredential = credentials('docker_builder')
     dockerImage = '' 
   }
   agent { 
@@ -33,12 +33,12 @@ pipeline {
         // currentBuild.number 젠킨스에서 제공하는 빌드넘버변수.
       }
     }
-    
+
    stage('docker image push') {
     steps {
       withDockerRegistry(credentialsId: dockerCredential, url: '') {
-          sh "docker push ${dockerRepository}:${BUILD_NUMBER}"
-          sh "docker push ${dockerRepository}"
+        sh "docker push ${dockerRepository}:${BUILD_NUMBER}"
+        sh "docker push ${dockerRepository}"
       }
     }
   }
