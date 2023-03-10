@@ -1,7 +1,7 @@
 pipeline {
   environment { 
     dockerRepository = "devwhoan/kcs-apigateway"
-    dockerCredential = 'docker'
+    dockerCredential = credentials('docker')
     dockerImage = '' 
   }
   agent { 
@@ -28,7 +28,7 @@ pipeline {
     }
     stage('Docker image Build') {
       steps {
-          withDockerRegistry([ credentialsId: "$dockerCredential", url: "" ]) {
+          withDockerRegistry([ credentialsId: dockerCredential, url: "" ]) {
             sh "docker build -t ${dockerRepository}:${BUILD_NUMBER} ."
           }
       }
