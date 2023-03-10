@@ -15,21 +15,12 @@ pipeline {
     stage('NestJS Build') {
    
         steps {
-          echo "Install Dependencies.."
-          sh 'npm install'
-        }
-        steps {
-          echo 'Unit Test Starting...'
+          echo "Install and Testing.."
           sh '''
+          npm install
           npm test
           '''
-        }
-        steps {
-          echo "Install Docker"
-          sh '''
-          curl -sSL https://get.docker.com | bash
-          docker --version
-          '''
+          sh 'npm install'
         }
       }
   
