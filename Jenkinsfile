@@ -8,21 +8,6 @@ pipeline {
     node {
       label 'jenkins-k8s-agent'
     }
-    
-    podTemplate(yaml: '''
-    apiVersion: v1
-    kind: Pod
-    spec:
-      containers:
-      - name: docker
-        image: docker
-        securityContext:
-          privileged: true
-        env:
-          - name: DOCKER_TLS_CERTDIR
-            value: ""
-    ''')
-
   }
   tools {nodejs "nodejs-16.16.0"}
   
@@ -43,9 +28,11 @@ pipeline {
     }
     stage('Docke Build') {
       steps {
-        container('docker') {
-          sh 'docker version'
-        }
+        echo "Install Docker"
+        sh '''
+        curl -sSL https://get.docker.com | bash
+        docker --version
+        '''
       }
     }
   }
