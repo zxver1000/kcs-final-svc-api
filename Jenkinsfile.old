@@ -6,8 +6,8 @@ pipeline {
   }
   agent { 
     node {
-      label 'jenkins-k8s-agent'
       defaultContainer 'jnlp'
+      label 'jenkins-k8s-agent'
     }
   }
   tools {nodejs "nodejs-16.16.0"}
