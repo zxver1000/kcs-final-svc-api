@@ -15,6 +15,7 @@ podTemplate(yaml: '''
     stage('Docker Template') {
       container('docker') {
         stage('Build Docker Image') {
+          echo "Docker Version"
           sh 'docker --version'
         }
       }
