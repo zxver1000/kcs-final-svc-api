@@ -11,7 +11,7 @@ pipeline {
   }
   tools {nodejs "nodejs-16.16.0"}
   
-  node('jenkins-k8s-agent') {
+  stages {
     stage('Install Dependencies') {
       steps{
         container('jnlp'){
