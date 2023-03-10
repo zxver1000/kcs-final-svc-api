@@ -26,16 +26,15 @@ pipeline {
       }
     }
     stage('Done') {
-        steps {
-          echo 'Can you See me?'
-        }
+      steps {
+        echo 'Can you See me?'
       }
     }
   
     stage('Build Docker Image') { 
       steps { 
         script { 
-            dockerImage = docker.build 0000 + ":$BUILD_NUMBER" 
+          dockerImage = docker.build 0000 + ":$BUILD_NUMBER" 
         }
       } 
     }
@@ -47,13 +46,13 @@ pipeline {
     stage('Deploy our image') { 
       steps { 
         script {
-          sh 'docker push $repository:$BUILD_NUMBER' //docker push
+          sh 'docker push $repository:$BUILD_NUMBER'
         } 
       }
     } 
     stage('Cleaning up') { 
       steps { 
-          sh "docker rmi $repository:$BUILD_NUMBER" // docker image 제거
+          sh "docker rmi $repository:$BUILD_NUMBER"
       }
     } 
   }
