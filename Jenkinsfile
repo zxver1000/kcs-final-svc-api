@@ -1,6 +1,6 @@
 pipeline {
   environment { 
-    repository = "devwhoan/kcs-apigateway"
+    dockerRepository = "devwhoan/kcs-apigateway"
     DOCKERHUB_CREDENTIALS = credentials('docker')
     dockerImage = '' 
   }
@@ -26,28 +26,14 @@ pipeline {
         '''
       }
     }
-  
-    stage('Docker Build') {
-      steps {
-        sh 'docker.build("devwhoan/kcs-apigateway:${env.BUILD_NUMBER}")'
-      }
+    withDockerRegistry(credentialsId: DOCKERHUB_CREDENTIALS, url: '') {
+    // withDockerRegistry : docker pipeline 플러그인 설치시 사용가능.
+    // dockerHubRegistryCredential : environment에서 선언한 docker_cre  
+      sh '''
+        docker build ${dockerRepository}:${BUILD_NUMBER} .
+        docker push ${dockerRepository}
+      '''
     }
-    
-    stage('Docker Login'){
-      steps{
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-      }
-    }
-    stage('Docker Push') {
-      steps {
-        sh 'docker push devwhoan/kcs-apigateway'
-      }
-    }
-    
-    stage('Cleaning up') { 
-      steps { 
-          sh "docker rmi $repository:$BUILD_NUMBER"
-      }
-    } 
+
   }
 }
