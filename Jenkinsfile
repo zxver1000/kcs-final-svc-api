@@ -1,7 +1,7 @@
 pipeline {
   environment { 
     dockerRepository = "devwhoan/kcs-apigateway"
-    DOCKERHUB_CREDENTIALS = credentials('docker')
+    dockerCredential = credentials('docker')
     dockerImage = '' 
   }
   agent { 
@@ -26,14 +26,20 @@ pipeline {
         '''
       }
     }
-    withDockerRegistry(credentialsId: DOCKERHUB_CREDENTIALS, url: '') {
-    // withDockerRegistry : docker pipeline 플러그인 설치시 사용가능.
-    // dockerHubRegistryCredential : environment에서 선언한 docker_cre  
-      sh '''
-        docker build ${dockerRepository}:${BUILD_NUMBER} .
-        docker push ${dockerRepository}
-      '''
+    stage('Docker image Build') {
+      steps {
+        sh "docker build -t ${dockerRepository}:${BUILD_NUMBER} ."
+        // oolralra/sbimage:4 이런식으로 빌드가 될것이다.
+        // currentBuild.number 젠킨스에서 제공하는 빌드넘버변수.
+      }
     }
-
+    
+   stage('docker image push') {
+    steps {
+      withDockerRegistry(credentialsId: dockerCredential, url: '') {
+          sh "docker push ${dockerRepository}:${BUILD_NUMBER}"
+          sh "docker push ${dockerRepository}"
+      }
+    }
   }
 }
