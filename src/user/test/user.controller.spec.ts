@@ -95,7 +95,6 @@ describe('UserController', () => {
     });
 
     test('then it should call service.createUser', async () => {
-      console.log(service);
       expect(service.createUser).toBeCalledWith(mockUserCreateDto);
     });
 

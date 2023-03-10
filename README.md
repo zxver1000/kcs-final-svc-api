@@ -1,9 +1,14 @@
 # .env File
 
 ```
+PORT=3080
+
 [MicroService]
 UserHost=localhost
-UserPort=3001
+UserPort=3081
+
+FileServerHost=localhost
+FileServerPort=3082
 
 [UserAuth]
 JWT_SECRET=secret
