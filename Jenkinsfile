@@ -28,9 +28,7 @@ pipeline {
     }
     stage('Docker image Build') {
       steps {
-          withDockerRegistry([ credentialsId: dockerCredential, url: "" ]) {
-            sh "docker build -t ${dockerRepository}:${BUILD_NUMBER} ."
-          }
+        docker.build(dockerRepository:$BUILD_NUMBER)
       }
     }
 
