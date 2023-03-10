@@ -11,6 +11,7 @@ pipeline {
   }
   tools {nodejs "nodejs-16.16.0"}
   
+  stages {
     stage('NestJS Build') {
    
         steps {
@@ -32,12 +33,13 @@ pipeline {
         }
       }
   
-  stage('Start Docker') {
-    steps {
-      container('docker') {
-        sh '''
-        docker --version
-        '''
+    stage('Start Docker') {
+      steps {
+        container('docker') {
+          sh '''
+          docker --version
+          '''
+        }
       }
     }
   }
