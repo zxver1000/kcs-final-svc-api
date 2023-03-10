@@ -20,7 +20,9 @@ spec:
 ''') {
     node(POD_LABEL) {
         container('docker') {
-            sh 'ls'
+            sh '''
+            npm install
+            '''
         }
     }
 }
