@@ -44,10 +44,7 @@ pipeline {
       steps {
         container('docker') {
           sh '''
-          git clone https://github.com/dev-whoan/kcs-final-svc-api -b deploy/apigateway gateway
-          cd gateway
-          docker build -t $dockerRepository:$BUILD_NUMBER .
-          docker push $dockerRepository:$BUILD_NUMBER
+          ls
           '''
         }
       }
