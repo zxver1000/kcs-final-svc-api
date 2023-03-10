@@ -44,7 +44,8 @@ pipeline {
       steps {
         container('docker') {
           sh '''
-          ls
+          docker build -t $dockerRepository:$BUILD_NUMBER .
+          docker push $dockerRepository
           '''
         }
       }
