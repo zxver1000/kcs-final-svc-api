@@ -12,7 +12,6 @@ pipeline {
   tools {nodejs "nodejs-16.16.0"}
   
   container('jnlp'){
-     stages {
       stage('Install Dependencies') {
         steps {
           echo "Install Dependencies.."
@@ -36,6 +35,5 @@ pipeline {
           '''
         }
       }
-    } 
   }
 }
