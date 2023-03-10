@@ -1,7 +1,7 @@
 pipeline {
   environment { 
     dockerRepository = "devwhoan/kcs-apigateway"
-    dockerCredential = credentials('docker_builder')
+    dockerCredential = credentials('docker')
     dockerImage = '' 
   }
   agent { 
