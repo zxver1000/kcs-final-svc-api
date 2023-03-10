@@ -11,8 +11,8 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation } from '@nestjs/swagger';
 import { FileServerService } from './file-server.service';
-import { CurrentUser } from 'src/common/decorator/user.decorator';
-import { User } from 'src/user/data/user.schema';
+import { CurrentUser } from '../common/decorator/user.decorator';
+import { User } from '../user/data/user.schema';
 
 @Controller('files')
 export class FileServerController {

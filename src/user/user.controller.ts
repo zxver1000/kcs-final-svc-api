@@ -8,6 +8,7 @@ import {
   Post,
   UseGuards,
   UnauthorizedException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserCreateDto } from './data/dto/user-create.dto';
