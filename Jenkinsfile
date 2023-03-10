@@ -29,7 +29,7 @@ pipeline {
   
     stage('Docker Build') {
       steps {
-        sh 'docker build -t devwhoan/kcs-apigateway:$BUILD_NUMBER .'
+        sh 'docker.build("devwhoan/kcs-apigateway:${env.BUILD_NUMBER}")'
       }
     }
     
