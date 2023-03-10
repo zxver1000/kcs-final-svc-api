@@ -28,16 +28,9 @@ pipeline {
     }
     stage('Docker image Build') {
       steps {
-        app = docker.build("$dockerRepository:$BUILD_NUMBER")
-      }
-    }
-
-   stage('docker image push') {
-    steps {
-        withDockerRegistry(credentialsId: dockerCredential, url: '') {
-          sh "docker push ${dockerRepository}:${BUILD_NUMBER}"
-          sh "docker push ${dockerRepository}"
-        }
+        sh'''
+         docker --version
+        '''
       }
     }
   }
