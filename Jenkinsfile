@@ -11,22 +11,18 @@ pipeline {
   }
   tools {nodejs "nodejs-16.16.0"}
   
-  container('jnlp'){
-      stage('Install Dependencies') {
+    stage('NestJS Build') {
+   
         steps {
           echo "Install Dependencies.."
           sh 'npm install'
         }
-      }
-      stage('Test') {
         steps {
           echo 'Unit Test Starting...'
           sh '''
           npm test
           '''
         }
-      }
-      stage('Docke Build') {
         steps {
           echo "Install Docker"
           sh '''
@@ -35,5 +31,14 @@ pipeline {
           '''
         }
       }
+  
+  stage('Start Docker') {
+    steps {
+      container('docker') {
+        sh '''
+        docker --version
+        '''
+      }
+    }
   }
 }
