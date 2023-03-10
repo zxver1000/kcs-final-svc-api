@@ -10,6 +10,7 @@ pipeline {
     }
   }
   tools {nodejs "nodejs-16.16.0"}
+  'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker_builder'
   stages {
     stage('Install Dependencies') {
       steps {
