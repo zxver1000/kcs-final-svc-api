@@ -28,7 +28,7 @@ pipeline {
     }
     stage('Docker image Build') {
       steps {
-        docker.build("$dockerRepository:$BUILD_NUMBER")
+        app = docker.build("$dockerRepository:$BUILD_NUMBER")
       }
     }
 
