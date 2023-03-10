@@ -25,31 +25,24 @@ pipeline {
         '''
       }
     }
-    stage('Done') {
+  
+    stage('Docker Build') {
       steps {
-        echo 'Can you See me?'
+        sh 'docker build -t devwhoan/kcs-apigateway:$BUILD_NUMBER .'
       }
     }
-  
-    stage('Build Docker Image') { 
-      steps { 
-        script { 
-          dockerImage = docker.build 0000 + ":$BUILD_NUMBER" 
-        }
-      } 
-    }
-    stage('Login'){
+    
+    stage('Docker Login'){
       steps{
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
       }
     }
-    stage('Deploy our image') { 
-      steps { 
-        script {
-          sh 'docker push $repository:$BUILD_NUMBER'
-        } 
+    stage('Docker Push') {
+      steps {
+        sh 'docker push devwhoan/kcs-apigateway'
       }
-    } 
+    }
+    
     stage('Cleaning up') { 
       steps { 
           sh "docker rmi $repository:$BUILD_NUMBER"
