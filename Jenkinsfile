@@ -29,22 +29,25 @@ pipeline {
   tools {nodejs "nodejs-16.16.0"}
   
   stages {
-    stage('NestJS Build') {
-        steps {
-          echo "Install and Testing.."
-          sh '''
-          npm install
-          npm test
-          '''
-          sh 'npm install'
-        }
+    stage('NestJS Build') { 
+      steps {
+        echo "Install and Testing.."
+        sh '''
+        npm install
+        npm test
+        '''
+        sh 'npm install'
       }
+    }
   
     stage('Start Docker') {
       steps {
         container('docker') {
           sh '''
-          docker --version
+          git clone https://github.com/dev-whoan/kcs-final-svc-api -b deploy/apigateway gateway
+          cd gateway
+          docker build -t $dockerRepository:$BUILD_NUMBER .
+          docker push $dockerRepository:$BUILD_NUMBER
           '''
         }
       }
