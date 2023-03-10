@@ -26,7 +26,9 @@ pipeline {
         '''
       }
     }
-    podTemplate(yaml: '''
+  }
+  
+  podTemplate(yaml: '''
     apiVersion: v1
     kind: Pod
     spec:
@@ -45,5 +47,4 @@ pipeline {
             }
         }
     }
-  }
 }
