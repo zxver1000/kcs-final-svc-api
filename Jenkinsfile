@@ -28,9 +28,9 @@ pipeline {
     }
     stage('Docker image Build') {
       steps {
-        sh "docker build -t ${dockerRepository}:${BUILD_NUMBER} ."
-        // oolralra/sbimage:4 이런식으로 빌드가 될것이다.
-        // currentBuild.number 젠킨스에서 제공하는 빌드넘버변수.
+          withDockerRegistry([ credentialsId: "$dockerCredential", url: "" ]) {
+            sh "docker build -t ${dockerRepository}:${BUILD_NUMBER} ."
+          }
       }
     }
 
