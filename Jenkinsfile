@@ -58,7 +58,6 @@ pipeline {
       steps {
         container('docker') {
           sh '''
-          cat $DOCKER_KEY
           ls /agent-resource/cm/hub.yaml
           cat /agent-resource/cm/hub.yaml
           docker build -t $dockerRepository:$BUILD_NUMBER .
