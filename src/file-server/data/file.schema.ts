@@ -11,7 +11,7 @@ const options: SchemaOptions = {
 };
 
 @Schema(options)
-export class Files extends Document {
+export class FileInfo extends Document {
   @ApiProperty({
     example: '628eaf2134495',
     description: 'MongoDB Object ID, 키 값',
@@ -68,9 +68,9 @@ export class Files extends Document {
 }
 
 //*
-const _FilesSchema = SchemaFactory.createForClass(Files);
+const _FilesSchema = SchemaFactory.createForClass(FileInfo);
 
-_FilesSchema.virtual('readOnlyData').get(function (this: Files) {
+_FilesSchema.virtual('readOnlyData').get(function (this: FileInfo) {
   return {
     owner: this.owner,
     filePath: this.filePath,

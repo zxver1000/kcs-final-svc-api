@@ -63,7 +63,5 @@ WORKDIR /gateway
 COPY --chown=node:node --from=build /app/node_modules /gateway/node_modules
 COPY --chown=node:node --from=build /app/dist /gateway/dist
 
-RUN find . -name "*.spec.ts" -type f -delete
-
 # Start the server using the production build
 CMD [ "node", "/gateway/dist/main.js" ]
