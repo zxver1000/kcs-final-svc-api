@@ -39,19 +39,10 @@ pipeline {
         sh 'npm install'
       }
     }
-
-    stage('Check Credential') {
-      steps {
-        container('docker') {
-          echo "Cred: ${dockerCredential}"
-        }
-      }
-    }
     stage('Start Docker') {
       steps {
         container('docker') {
           sh '''
-          cat ${dockerCredential} | docker login --username devwhoan --password-stdin
           docker build -t $dockerRepository:$BUILD_NUMBER .
           docker push $dockerRepository:$BUILD_NUMBER
           '''
