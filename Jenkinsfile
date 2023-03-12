@@ -43,7 +43,7 @@ pipeline {
     stage('Check Credential') {
       steps {
         container('docker') {
-          echo $dockerCredential 
+          echo "Cred: ${dockerCredential}"
         }
       }
     }
@@ -51,7 +51,7 @@ pipeline {
       steps {
         container('docker') {
           sh '''
-          cat $dockerCredential | docker login --username devwhoan --password-stdin
+          cat ${dockerCredential} | docker login --username devwhoan --password-stdin
           docker build -t $dockerRepository:$BUILD_NUMBER .
           docker push $dockerRepository:$BUILD_NUMBER
           '''
