@@ -45,7 +45,7 @@ pipeline {
         container('docker') {
           sh '''
           docker build -t $dockerRepository:$BUILD_NUMBER .
-          docker push $dockerRepository
+          docker push $dockerRepository:$BUILD_NUMBER
           '''
         }
       }
