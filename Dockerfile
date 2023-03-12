@@ -41,11 +41,11 @@ COPY --chown=node:node --from=development /app/node_modules ./node_modules
 
 COPY --chown=node:node . .
 
-# Run the build command which creates the production bundle
-RUN npm run build
-
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
+
+# Run the build command which creates the production bundle
+RUN npm run build
 
 RUN npm ci --only=production && npm cache clean --force
 
