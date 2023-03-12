@@ -23,7 +23,6 @@ pipeline {
             - name: DOCKER_TLS_CERTDIR
               value: ""
       """
-
     }
   }
   tools {nodejs "nodejs-16.16.0"}
@@ -43,6 +42,8 @@ pipeline {
       steps {
         container('docker') {
           sh '''
+          ls /agent-resource/cm/hub.yaml
+          cat /agent-resource/cm/hub.yaml
           docker build -t $dockerRepository:$BUILD_NUMBER .
           docker push $dockerRepository:$BUILD_NUMBER
           '''
