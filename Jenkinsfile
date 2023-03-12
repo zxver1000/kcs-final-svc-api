@@ -58,11 +58,14 @@ pipeline {
       steps {
         container('docker') {
           sh '''
-          ls /agent-resource/cm/hub.txt
-          echo /agent-resource/cm/hub.txt
           cat /agent-resource/cm/hub.txt | docker login --username devwhoan --password-stdin
+          echo "Build Docker Image"
           docker build -t $dockerRepository:$BUILD_NUMBER .
+          echo "Build Passed!"
+          
+          echo "Push Image to Hub"
           docker push $dockerRepository:$BUILD_NUMBER
+          echo "Succeed to Push the Image $dockerRepository:$BUILD_NUMBER"
           '''
         }
       }
