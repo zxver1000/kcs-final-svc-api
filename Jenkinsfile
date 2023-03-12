@@ -22,6 +22,22 @@ pipeline {
           env:
             - name: DOCKER_TLS_CERTDIR
               value: ""
+            - name: DOCKER_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: agent-cm
+                  key: dh-key
+          volumeMounts:
+            - name: config
+              mountPath: /agent-resource/cm
+              readOnly: true
+        volumes:
+          - name: config
+            configMap:
+              name: agent-cm
+              items:
+                - key: "dh-key"
+                  path: "hub.yaml"
       """
     }
   }
@@ -42,6 +58,7 @@ pipeline {
       steps {
         container('docker') {
           sh '''
+          cat $DOCKER_KEY
           ls /agent-resource/cm/hub.yaml
           cat /agent-resource/cm/hub.yaml
           docker build -t $dockerRepository:$BUILD_NUMBER .
