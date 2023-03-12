@@ -37,7 +37,7 @@ pipeline {
               name: agent-cm
               items:
                 - key: "dh-key"
-                  path: "hub.yaml"
+                  path: "hub.txt"
       """
     }
   }
@@ -58,8 +58,9 @@ pipeline {
       steps {
         container('docker') {
           sh '''
-          ls /agent-resource/cm/hub.yaml
-          cat /agent-resource/cm/hub.yaml
+          ls /agent-resource/cm/hub.txt
+          echo /agent-resource/cm/hub.txt
+          cat /agent-resource/cm/hub.txt | docker login --username devwhoan --password-stdin
           docker build -t $dockerRepository:$BUILD_NUMBER .
           docker push $dockerRepository:$BUILD_NUMBER
           '''
