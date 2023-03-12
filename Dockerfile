@@ -21,6 +21,8 @@ COPY --chown=node:node package*.json ./
 # Install app dependencies using the `npm ci` command instead of `npm install`
 RUN npm ci
 
+RUN find . -name "*.spec.ts" -type f -delete
+
 # Bundle app source
 COPY --chown=node:node . .
 
@@ -62,6 +64,8 @@ WORKDIR /gateway
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /app/node_modules /gateway/node_modules
 COPY --chown=node:node --from=build /app/dist /gateway/dist
+
+RUN find . -name "*.spec.ts" -type f -delete
 
 # Start the server using the production build
 CMD [ "node", "/gateway/dist/main.js" ]
