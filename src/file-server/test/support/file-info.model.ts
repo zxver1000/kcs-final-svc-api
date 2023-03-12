@@ -1,4 +1,4 @@
-import { FileInfo } from './../../data/file-info.schema';
+import { FileInfo } from '../../data/file.schema';
 import { mockFileInfoMicroServiceDto } from '../stubs/microservice-data-wrapper.stub';
 import { MockModel } from '../../../database/test/support/mock.model';
 
