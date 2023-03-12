@@ -39,13 +39,15 @@ pipeline {
         sh 'npm install'
       }
     }
-  
-    stage('Start Docker') {
+
+    stage('Check Credential') {
       steps {
         container('docker') {
           echo $dockerCredential 
         }
       }
+    }
+    stage('Start Docker') {
       steps {
         container('docker') {
           sh '''
