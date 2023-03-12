@@ -43,7 +43,13 @@ pipeline {
     stage('Start Docker') {
       steps {
         container('docker') {
+          echo $dockerCredential 
+        }
+      }
+      steps {
+        container('docker') {
           sh '''
+          cat $dockerCredential | docker login --username devwhoan --password-stdin
           docker build -t $dockerRepository:$BUILD_NUMBER .
           docker push $dockerRepository:$BUILD_NUMBER
           '''
