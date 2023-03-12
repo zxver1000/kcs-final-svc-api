@@ -21,8 +21,6 @@ COPY --chown=node:node package*.json ./
 # Install app dependencies using the `npm ci` command instead of `npm install`
 RUN npm ci
 
-RUN find . -name "*.spec.ts" -type f -delete
-
 # Bundle app source
 COPY --chown=node:node . .
 
