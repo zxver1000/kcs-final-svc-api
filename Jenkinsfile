@@ -21,6 +21,10 @@ pipeline {
           env:
             - name: DOCKER_TLS_CERTDIR
               value: ""
+            - name: DOCKER_BUILDKIT
+              value: "0"
+            - name: DOCKER_CLI_EXPERIMENTAL
+              value: enabled
             - name: DOCKER_KEY
               valueFrom:
                 configMapKeyRef:
