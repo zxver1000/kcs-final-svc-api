@@ -1,4 +1,5 @@
 FROM node:16-alpine
+RUN apk update && apk --no-cache add python make g++
 LABEL email="dev.whoan@gmail.com"
 LABEL name="Eugene Minwhoan Kim"
 LABEL version="0.0.1"
@@ -20,7 +21,7 @@ COPY --chown=node:node package*.json ./
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
 
-RUN apk --no-cache add --virtual builds-deps build-base python
+RUN python --version
 RUN npm ci --verbose
 
 # Bundle app source
@@ -46,8 +47,7 @@ COPY --chown=node:node . .
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
 
-RUN apk --no-cache add --virtual builds-deps build-base python
-
+RUN python --version
 # Run the build command which creates the production bundle
 RUN npm run build
 
