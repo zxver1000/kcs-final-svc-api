@@ -1,5 +1,5 @@
 FROM node:16-alpine
-RUN apk update && apk --no-cache add python make g++
+
 LABEL email="dev.whoan@gmail.com"
 LABEL name="Eugene Minwhoan Kim"
 LABEL version="0.0.1"
