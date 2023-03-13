@@ -21,7 +21,6 @@ COPY --chown=node:node package*.json ./
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
 
-RUN python --version
 RUN npm ci --verbose
 
 # Bundle app source
@@ -47,7 +46,6 @@ COPY --chown=node:node . .
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
 
-RUN python --version
 # Run the build command which creates the production bundle
 RUN npm run build
 
