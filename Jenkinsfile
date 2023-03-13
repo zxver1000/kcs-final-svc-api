@@ -92,7 +92,7 @@ pipeline {
             cat gateway.yaml
             git add .
             git commit -m "feat. Version ${BUILD_NUMBER}"
-            git push https://dev-whoan:${GIT_CREDS_PSW}@github.com/kcs-final-svc-api-deploy.git deploy/api-gateway
+            git push https://dev-whoan:${GIT_CREDS_PSW}@github.com/dev-whoan/kcs-final-svc-api-deploy deploy/api-gateway
           '''
         }
       }
