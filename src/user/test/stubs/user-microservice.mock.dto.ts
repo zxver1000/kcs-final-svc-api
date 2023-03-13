@@ -1,15 +1,20 @@
 import { HttpStatus } from '@nestjs/common';
+import { Transform } from 'class-transformer';
 import { UserCreateDto } from 'src/user/data/dto/user-create.dto';
 import { MicroserviceDataWrapper } from '../../../common/data/microservice-data-wrapper';
 import { UserMicroserviceDto } from '../../../user/data/dto/user.dto';
 
+const pass = 'password';
+
+Transform((passz) => {
+  return 'password';
+});
 export const mockUserMicroserviceDtoStub = (): UserMicroserviceDto => {
   return {
     id: 'test-id',
     email: 'test@test.com',
     nickname: 'test-nickname',
     profileimage: 'test-profile',
-    password: 'test-password',
   };
 };
 
@@ -31,6 +36,5 @@ export const mockMicroserviceDataWrapperStub = (): MicroserviceDataWrapper => {
 
 export const mockUsercreateDto: UserCreateDto = {
   email: 'hihi2',
-  password: 'sfds',
   nickname: 'ss',
 };
