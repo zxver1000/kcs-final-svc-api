@@ -18,6 +18,9 @@ pipeline {
           image: docker:23.0.1-dind
           securityContext:
             privileged: true
+          resources:
+            requests:
+              memory: 512Mi
           env:
             - name: DOCKER_TLS_CERTDIR
               value: ""
