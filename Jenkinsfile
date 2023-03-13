@@ -50,7 +50,7 @@ pipeline {
   tools {nodejs "nodejs-16.16.0"}
   
   stages {
-    /*
+/*
     stage('NestJS Build') { 
       steps {
         echo "Install and Testing.."
@@ -78,10 +78,18 @@ pipeline {
         }
       }
     }
-    */
+*/
     stage('Create Deploy Yaml') {
+      sshagent (credentials: ['Github-Repo']) {
+        // "git add", "git commit", and "git push" your changes here. You may have to cd into the repo directory like I did here because the current working directory is the parent directory to the directory that contains the actual repo, created by "git clone" earlier in this Jenkinsfile.
+        sh("(echo 'Setting Yaml. You can see example at http://www.eg-playground.xyz:8090/kcs-final/baseline.yaml')")
+        sh("(git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway)")
+        sh("(cd gateway && git commit -m 'feat. Version ${BUILD_NUMBER}')")
+        sh('(cd gateway && git push git@github.com:dev-whoan/kcs-final-svc-api-deploy)')
+      }
+/*
       steps {
-        echo "Setting Yaml. You can see example at http://www.eg-playground.xyz:8090/kcs-final/baseline.yaml"
+        echo 'Setting Yaml. You can see example at http://www.eg-playground.xyz:8090/kcs-final/baseline.yaml'
         sh '''
         git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
         cd gateway
@@ -89,6 +97,7 @@ pipeline {
         cat gateway.yaml
         '''
       }
+*/
     }
   }
 }
