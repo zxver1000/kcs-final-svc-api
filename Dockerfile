@@ -19,7 +19,7 @@ WORKDIR /app
 COPY --chown=node:node package*.json ./
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
-RUN npm ci --silent
+RUN npm ci --verbose
 
 # Bundle app source
 COPY --chown=node:node . .
@@ -47,7 +47,7 @@ ENV NODE_ENV production
 # Run the build command which creates the production bundle
 RUN npm run build
 
-RUN npm ci --only=production --silent && npm cache clean --force
+RUN npm ci --only=production --verbose && npm cache clean --force
 
 USER node
 
