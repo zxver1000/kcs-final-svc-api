@@ -82,7 +82,7 @@ pipeline {
 */
     stage('Create Deploy Yaml') {
       steps{ 
-        echo ${gitCredential}
+        echo "${gitCredential}"
         script{
           sh '''
             echo $gitCredential
