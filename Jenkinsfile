@@ -15,7 +15,7 @@ pipeline {
           app: jenkins-worker
       spec:
         containers:
-        - name: docker
+        - name: docker-job
           image: docker:23.0.1-dind
           securityContext:
             privileged: true
@@ -56,7 +56,7 @@ pipeline {
     }
     stage('Start Docker') {
       steps {
-        container('docker') {
+        container('docker-job') {
           sh '''
           echo "Docker Login..."
           cat /agent-resource/cm/hub.txt | docker login --username devwhoan --password-stdin
