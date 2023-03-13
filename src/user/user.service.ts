@@ -6,6 +6,7 @@ import { UserRepository } from './data/user.repository';
 import { UserMicroserviceDto } from './data/dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,7 @@ export class UserService {
   constructor(
     private readonly redisService: RedisManagerService,
     private readonly userRepository: UserRepository,
+    private readonly mailService: MailerService,
   ) {}
   async getUserById(userid: string): Promise<UserMicroserviceDto | number> {
     console.log('userid', userid);
@@ -31,9 +33,23 @@ export class UserService {
     return HttpStatus.NO_CONTENT;
   }
 
+  async sendMail(password: string, userEmail: string): Promise<number> {
+    this.mailService
+      .sendMail({
+        to: 'wlwhs5014@naver.com',
+        from: 'wlwhs3154@gmail.com',
+        subject: '이거되나요?',
+        text: '변경된 비밀번호는 ' + password,
+      })
+      .catch((e) => {
+        return HttpStatus.INTERNAL_SERVER_ERROR;
+      });
+    return 200;
+  }
+
   async resetPassword(email: string): Promise<UserMicroserviceDto | number> {
     const result = await this.userRepository.findByEmail(email);
-    this.logger.log('getUserByEmail.result: ', result);
+
     if (!result) {
       return HttpStatus.INTERNAL_SERVER_ERROR;
     }
@@ -41,9 +57,19 @@ export class UserService {
     if (typeof result === 'number') {
       return result;
     }
+
     const alter_password = Math.random().toString(36).slice(2);
     result.password = alter_password;
+
+    const sendMail_return_value = await this.sendMail(
+      alter_password,
+      result.email,
+    );
+    if (sendMail_return_value == HttpStatus.INTERNAL_SERVER_ERROR) {
+      return sendMail_return_value;
+    }
     result.save();
+
     //이메일 보내기
     if (!!result) {
       return new UserMicroserviceDto(result);

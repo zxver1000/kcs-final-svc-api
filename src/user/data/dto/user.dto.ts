@@ -12,6 +12,7 @@ export class UserMicroserviceDto extends PickType(User, [
   @Exclude()
   password: string;
 
+
   //* 예민한 정보 제외
   constructor(partial: Partial<UserMicroserviceDto>) {
     super();
