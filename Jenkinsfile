@@ -83,7 +83,9 @@ pipeline {
       steps{ 
         script{
           GIT_CREDS = credentials('Github-Repo')
+          echo $GIT_CREDS
           sh '''
+            echo $GIT_CREDS
             git config --global user.email "dev.whoan@gmail.com"
             git config --global user.name "dev-whoan"
             git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
