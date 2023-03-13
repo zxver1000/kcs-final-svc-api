@@ -1,6 +1,7 @@
 pipeline {
   environment { 
     dockerRepository = "devwhoan/kcs-apigateway"
+    gitCredential = credentials('Github-Repo')
     dockerImage = '' 
   }
   agent { 
@@ -82,10 +83,9 @@ pipeline {
     stage('Create Deploy Yaml') {
       steps{ 
         script{
-          GIT_CREDS = credentials('Github-Repo')
-          echo $GIT_CREDS
+          echo $gitCredential
           sh '''
-            echo $GIT_CREDS
+            echo $gitCredential
             git config --global user.email "dev.whoan@gmail.com"
             git config --global user.name "dev-whoan"
             git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
@@ -94,7 +94,7 @@ pipeline {
             cat gateway.yaml
             git add .
             git commit -m "feat. Version ${BUILD_NUMBER}"
-            git push https://dev-whoan:${GIT_CREDS_PSW}@github.com/dev-whoan/kcs-final-svc-api-deploy deploy/api-gateway
+            git push https://dev-whoan:${gitCredential}@github.com/dev-whoan/kcs-final-svc-api-deploy deploy/api-gateway
           '''
         }
       }
