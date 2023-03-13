@@ -20,8 +20,8 @@ COPY --chown=node:node package*.json ./
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
 
-RUN rm package-lock.json
-RUN npm install --verbose
+RUN apk --no-cache add --virtual builds-deps build-base python
+RUN npm ci --verbose
 
 # Bundle app source
 COPY --chown=node:node . .
@@ -46,11 +46,12 @@ COPY --chown=node:node . .
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
 
+RUN apk --no-cache add --virtual builds-deps build-base python
+
 # Run the build command which creates the production bundle
 RUN npm run build
 
-RUN rm package-lock.json
-RUN npm install --only=production --verbose && npm cache clean --force
+RUN npm ci --only=production --verbose && npm cache clean --force
 
 USER node
 
