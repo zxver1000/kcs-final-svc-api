@@ -3,7 +3,7 @@ import { UserService } from '../../user/user.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginRequestDto } from '../jwt/dto/login.request.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
