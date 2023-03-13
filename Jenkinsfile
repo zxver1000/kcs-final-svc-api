@@ -80,12 +80,13 @@ pipeline {
     }
     */
     stage('Create Deploy Yaml') {
-      stpes {
+      steps {
         echo "Setting Yaml. You can see example at http://www.eg-playground.xyz:8090/kcs-final/baseline.yaml"
         sh '''
         git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
         cd gateway
         sed -i "19s/.*/        image: devwhoan\\/kcs-apigateway:${BUILD_NUMBER}/" gateway.yaml
+        echo gateway.yaml
         '''
       }
     }
