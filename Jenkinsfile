@@ -51,7 +51,6 @@ pipeline {
   tools {nodejs "nodejs-16.16.0"}
   
   stages {
-/*
     stage('NestJS Build') { 
       steps {
         echo "Install and Testing.."
@@ -79,13 +78,10 @@ pipeline {
         }
       }
     }
-*/
-    stage('Create Deploy Yaml') {
+    stage('Update Deploy Branch') {
       steps{ 
-        echo "${gitCredential}"
         script{
           sh '''
-            echo $gitCredential
             git config --global user.email "dev.whoan@gmail.com"
             git config --global user.name "dev-whoan"
             git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
