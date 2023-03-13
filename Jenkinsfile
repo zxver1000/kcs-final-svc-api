@@ -58,6 +58,7 @@ pipeline {
       steps {
         container('docker') {
           sh '''
+          echo "Docker Login..."
           cat /agent-resource/cm/hub.txt | docker login --username devwhoan --password-stdin
           echo "Build Docker Image"
           docker build -t $dockerRepository:$BUILD_NUMBER .
