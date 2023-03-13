@@ -82,8 +82,8 @@ pipeline {
 */
     stage('Create Deploy Yaml') {
       steps{ 
+        echo ${gitCredential}
         script{
-          echo $gitCredential
           sh '''
             echo $gitCredential
             git config --global user.email "dev.whoan@gmail.com"
