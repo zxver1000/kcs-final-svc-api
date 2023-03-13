@@ -50,6 +50,7 @@ pipeline {
   tools {nodejs "nodejs-16.16.0"}
   
   stages {
+    /*
     stage('NestJS Build') { 
       steps {
         echo "Install and Testing.."
@@ -75,6 +76,17 @@ pipeline {
           echo "Succeed to Push the Image $dockerRepository:$BUILD_NUMBER"
           '''
         }
+      }
+    }
+    */
+    stage('Create Deploy Yaml') {
+      stpes {
+        echo "Setting Yaml. You can see example at http://www.eg-playground.xyz:8090/kcs-final/baseline.yaml"
+        sh '''
+        git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
+        cd gateway
+        sed -i "19s/.*/        image: devwhoan\/kcs-apigateway:${BUILD_NUMBER}/" gateway.yaml
+        '''
       }
     }
   }
