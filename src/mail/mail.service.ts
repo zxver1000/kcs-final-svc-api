@@ -7,8 +7,8 @@ export class MailService {
   async sendMail(password: string, userEmail: string): Promise<number> {
     this.mailService
       .sendMail({
-        to: 'wlwhs5014@naver.com',
-        from: 'wlwhs3154@gmail.com',
+        to: process.env.From_email,
+        from: userEmail,
         subject: '안녕하세요 KuDaily 입니다.',
         text: '변경된 비밀번호는 ' + password,
       })
