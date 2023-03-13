@@ -80,12 +80,19 @@ pipeline {
     }
 */
     stage('Create Deploy Yaml') {
-      sshagent (credentials: ['Github-Repo']) {
-        // "git add", "git commit", and "git push" your changes here. You may have to cd into the repo directory like I did here because the current working directory is the parent directory to the directory that contains the actual repo, created by "git clone" earlier in this Jenkinsfile.
-        sh("(echo 'Setting Yaml. You can see example at http://www.eg-playground.xyz:8090/kcs-final/baseline.yaml')")
-        sh("(git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway)")
-        sh("(cd gateway && git commit -m 'feat. Version ${BUILD_NUMBER}')")
-        sh('(cd gateway && git push git@github.com:dev-whoan/kcs-final-svc-api-deploy)')
+      steps{ 
+        script{
+          GIT_CREDS = credentials('Github-Repo')
+          sh '''
+            git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
+            cd gateway
+            sed -i "19s/.*/        image: devwhoan\\/kcs-apigateway:${BUILD_NUMBER}/" gateway.yaml
+            cat gateway.yaml
+            git add .
+            git commit -m "feat. Version ${BUILD_NUMBER}"
+            git push https://dev-whoan:${GIT_CREDS_PSW}@github.com/kcs-final-svc-api-deploy.git deploy/api-gateway
+          '''
+        }
       }
     }
   }
