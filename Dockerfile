@@ -19,6 +19,8 @@ WORKDIR /app
 COPY --chown=node:node package*.json ./
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
+
+RUN rm package-lock.json
 RUN npm ci --verbose
 
 # Bundle app source
@@ -47,6 +49,7 @@ ENV NODE_ENV production
 # Run the build command which creates the production bundle
 RUN npm run build
 
+RUN rm package-lock.json
 RUN npm ci --only=production --verbose && npm cache clean --force
 
 USER node
