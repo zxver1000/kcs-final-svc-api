@@ -53,12 +53,13 @@ pipeline {
   stages {
     stage('NestJS Build') { 
       steps {
-        echo "Install and Testing.."
-        sh '''
-        npm install
-        npm test
-        '''
+        echo "Install NestJS Dependencies"
         sh 'npm install'
+      }
+    }
+    stage('Code Testing'){
+      steps {
+        sh 'npm test'
       }
     }
     stage('Start Docker') {
