@@ -21,7 +21,7 @@ COPY --chown=node:node package*.json ./
 # Install app dependencies using the `npm ci` command instead of `npm install`
 
 RUN rm package-lock.json
-RUN npm ci --verbose
+RUN npm install --verbose
 
 # Bundle app source
 COPY --chown=node:node . .
@@ -50,7 +50,7 @@ ENV NODE_ENV production
 RUN npm run build
 
 RUN rm package-lock.json
-RUN npm ci --only=production --verbose && npm cache clean --force
+RUN npm install --only=production --verbose && npm cache clean --force
 
 USER node
 
