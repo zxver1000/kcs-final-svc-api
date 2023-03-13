@@ -4,11 +4,6 @@ import { UserCreateDto } from 'src/user/data/dto/user-create.dto';
 import { MicroserviceDataWrapper } from '../../../common/data/microservice-data-wrapper';
 import { UserMicroserviceDto } from '../../../user/data/dto/user.dto';
 
-const pass = 'password';
-
-Transform((passz) => {
-  return 'password';
-});
 export const mockUserMicroserviceDtoStub = (): UserMicroserviceDto => {
   return {
     id: 'test-id',
