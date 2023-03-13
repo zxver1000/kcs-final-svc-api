@@ -86,7 +86,7 @@ pipeline {
         git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
         cd gateway
         sed -i "19s/.*/        image: devwhoan\\/kcs-apigateway:${BUILD_NUMBER}/" gateway.yaml
-        echo gateway.yaml
+        cat gateway.yaml
         '''
       }
     }
