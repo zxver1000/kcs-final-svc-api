@@ -9,7 +9,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom, timeout } from 'rxjs';
 import { UserCreateDto } from './data/dto/user-create.dto';
-import { User } from './data/user.schema';
+import { UserMicroserviceDto } from './data/dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -39,6 +39,16 @@ export class UserService {
         .pipe(timeout(this.gatewayTimeout)),
     );
 
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
     return result;
   }
 
@@ -55,6 +65,16 @@ export class UserService {
         )
         .pipe(timeout(this.gatewayTimeout)),
     );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
 
     return result;
   }
@@ -77,7 +97,15 @@ export class UserService {
         .pipe(timeout(this.gatewayTimeout)),
     );
 
-    console.log('auth result', result);
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
 
     return result;
   }
@@ -92,6 +120,66 @@ export class UserService {
           },
           {
             user,
+          },
+        )
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
+    return result;
+  }
+
+  async deleteUser(
+    user: UserMicroserviceDto,
+  ): Promise<UserMicroserviceDataWrapper> {
+    const result = await lastValueFrom(
+      this.userClient
+        .send(
+          {
+            cmd: 'delete_user',
+          },
+          {
+            user,
+          },
+        )
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
+    return result;
+  }
+
+  async modifyUserInformation(
+    user: UserCreateDto,
+    userid: string,
+  ): Promise<UserMicroserviceDataWrapper> {
+    const result = await lastValueFrom(
+      this.userClient
+        .send(
+          {
+            cmd: 'update_user',
+          },
+          {
+            user,
+            userid,
           },
         )
         .pipe(timeout(this.gatewayTimeout)),

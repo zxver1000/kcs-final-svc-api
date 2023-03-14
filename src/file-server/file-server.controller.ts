@@ -13,25 +13,27 @@ import { ApiOperation } from '@nestjs/swagger';
 import { FileServerService } from './file-server.service';
 import { CurrentUser } from '../common/decorator/user.decorator';
 import { User } from '../user/data/user.schema';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 
 @Controller('files')
+@UseGuards(JwtAuthGuard)
 export class FileServerController {
   constructor(private readonly fileService: FileServerService) {}
 
   @Get(':id')
   async getFileInfo(@Param('id') fileid: string) {
-    const result = await this.fileService.getFileInfo(fileid);
-    return result;
+    return await this.fileService.getFileInfo(fileid);
   }
 
   @ApiOperation({ summary: '글 파일 업로드 - 이미지' })
   @Post('upload')
-  @UseInterceptors(FilesInterceptor('image', 10))
-  uploadFile(
+  @UseInterceptors(FilesInterceptor('files', 10))
+  async uploadFile(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @CurrentUser() user: User,
   ) {
-    return this.fileService.uploadFile(files, user);
+    console.log('files: ', files);
+    return await this.fileService.uploadFile(files, user);
   }
 
   /* files
