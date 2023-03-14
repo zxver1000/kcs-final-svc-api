@@ -9,7 +9,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom, timeout } from 'rxjs';
 import { FileInfoMicroserviceDataWrapper } from 'src/common/data/file-info.microservice.dto';
-import { User } from '../user/data/user.schema';
+import { UserMicroserviceDto } from 'src/user/data/dto/user.dto';
 
 @Injectable()
 export class FileServerService {
@@ -41,9 +41,9 @@ export class FileServerService {
 
   async uploadFile(
     files: Express.Multer.File[],
-    user: User,
+    user: UserMicroserviceDto,
   ): Promise<FileInfoMicroserviceDataWrapper> {
-    this.logger.debug('분명 불렸는데..');
+    this.logger.debug('uploadFile.user:', user);
     const result = await lastValueFrom(
       this.fileClient
         .send(
@@ -63,11 +63,30 @@ export class FileServerService {
         throw new HttpException(HttpStatus[result.code], result.code);
       }
     }
+
+    this.logger.debug('uploadFile.result:', result);
     return result;
-    // .pipe(timeout(this.gatewayTimeout));
-    /*.catch((error) => {
-        throw new HttpException(error, error.status);
-      });
-      */
+  }
+
+  async deleteFile(
+    fileid: string,
+    userid: string,
+  ): Promise<FileInfoMicroserviceDataWrapper> {
+    const result = await lastValueFrom(
+      this.fileClient
+        .send({ cmd: 'delete_file' }, { fileid, userid })
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+    return result;
   }
 }

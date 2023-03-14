@@ -1,11 +1,13 @@
 import { HttpStatus } from '@nestjs/common';
+import { FileInfoReadOnly } from 'src/file-server/data/file.schema';
 import { FileInfoMicroserviceDataWrapper } from '../../../common/data/file-info.microservice.dto';
-import { FileInfoMicroserviceDto } from '../../../file-server/data/dto/file-ms.dto';
 
-export const mockFileInfoMicroServiceDto: FileInfoMicroserviceDto = {
+export const mockFileInfoMicroServiceDto: FileInfoReadOnly = {
   owner: 'test-owner',
   id: '6407201654f23c80ad6c3bf1',
   filePath: 'test-filePath',
+  fileName: 'test-fileName',
+  size: 12345,
 };
 
 export const microServiceGetDataStub = (): FileInfoMicroserviceDataWrapper => {
