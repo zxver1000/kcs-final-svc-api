@@ -9,8 +9,8 @@ import { FileServerService as MockFileServerService } from '../__mocks__/file-se
 import { FileServerController } from '../file-server.controller';
 import { Test } from '@nestjs/testing';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { FileInfoMicroserviceDataWrapper } from 'src/common/data/file-info.microservice.dto';
-import { User } from 'src/user/data/user.schema';
+import { FileInfoMicroserviceDataWrapper } from '../../common/data/file-info.microservice.dto';
+import { User } from '../../user/data/user.schema';
 
 //* Find Actual Service, It will Auto Mock from __mocks__
 jest.mock('../file-server.service');

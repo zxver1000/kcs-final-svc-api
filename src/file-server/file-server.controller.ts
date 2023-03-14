@@ -1,6 +1,6 @@
 import {
-  Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -12,8 +12,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation } from '@nestjs/swagger';
 import { FileServerService } from './file-server.service';
 import { CurrentUser } from '../common/decorator/user.decorator';
-import { User } from '../user/data/user.schema';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { UserMicroserviceDto } from '../user/data/dto/user.dto';
 
 @Controller('files')
 @UseGuards(JwtAuthGuard)
@@ -26,16 +26,23 @@ export class FileServerController {
   }
 
   @ApiOperation({ summary: '글 파일 업로드 - 이미지' })
-  @Post('upload')
+  @Post('post')
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadFile(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @CurrentUser() user: User,
+    @CurrentUser() user: UserMicroserviceDto,
   ) {
-    console.log('files: ', files);
     return await this.fileService.uploadFile(files, user);
   }
 
+  @ApiOperation({ summary: '저장된 파일 삭제 기능 ' })
+  @Delete('post/:id')
+  async deleteFile(
+    @Param('id') fileid: string,
+    @CurrentUser() user: UserMicroserviceDto,
+  ) {
+    return await this.fileService.deleteFile(fileid, user.id);
+  }
   /* files
 [
   {

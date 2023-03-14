@@ -1,7 +1,7 @@
-import { FileInfoMicroserviceDto } from '../../file-server/data/dto/file-ms.dto';
+import { FileInfoReadOnly } from '../../file-server/data/file.schema';
 
 export interface FileInfoMicroserviceDataWrapper {
   success: boolean;
   code: number;
-  result?: FileInfoMicroserviceDto[] | boolean;
+  result?: FileInfoReadOnly[] | boolean;
 }
