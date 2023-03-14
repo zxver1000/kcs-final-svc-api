@@ -30,8 +30,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
 
-    const user = msDataFromUserServer.result[0];
+    try {
+      const user = msDataFromUserServer.result[0];
 
-    return user;
+      return user;
+    } catch (e) {
+      throw new UnauthorizedException('유저 정보를 확인해 주세요.');
+    }
   }
 }

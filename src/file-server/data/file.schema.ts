@@ -60,6 +60,7 @@ export class FileInfo extends Document {
   originalName: string;
 
   readonly readOnlyData: {
+    id: string;
     owner: string;
     fileid: string;
     filePath: string;
@@ -72,10 +73,14 @@ const _FilesSchema = SchemaFactory.createForClass(FileInfo);
 
 _FilesSchema.virtual('readOnlyData').get(function (this: FileInfo) {
   return {
+    id: this.id,
     owner: this.owner,
     filePath: this.filePath,
     fileNamee: this.fileName,
   };
 });
+
+_FilesSchema.set('toObject', { virtuals: true });
+_FilesSchema.set('toJSON', { virtuals: true });
 
 export const FilesSchema = _FilesSchema;

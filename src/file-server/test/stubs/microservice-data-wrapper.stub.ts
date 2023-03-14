@@ -5,6 +5,7 @@ import { FileInfoMicroserviceDto } from '../../../file-server/data/dto/file-ms.d
 export const mockFileInfoMicroServiceDto: FileInfoMicroserviceDto = {
   owner: 'test-owner',
   id: '6407201654f23c80ad6c3bf1',
+  filePath: 'test-filePath',
 };
 
 export const microServiceGetDataStub = (): FileInfoMicroserviceDataWrapper => {
