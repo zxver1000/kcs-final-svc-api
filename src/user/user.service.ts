@@ -197,4 +197,24 @@ export class UserService {
 
     return result;
   }
+
+  async findUser(email: string): Promise<UserMicroserviceDataWrapper> {
+    const result = await lastValueFrom(
+      this.userClient
+        .send({ cmd: 'find_user' }, { email })
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
+    return result;
+  }
 }

@@ -40,6 +40,11 @@ export class UserController {
     return this.authService.jwtLogIn(data);
   }
 
+  @Post('find')
+  findUser(@Body('email') email: string) {
+    return this.userService.findUser(email);
+  }
+
   @Patch()
   @UseGuards(JwtAuthGuard)
   updateUser(
