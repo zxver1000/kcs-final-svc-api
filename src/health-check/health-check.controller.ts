@@ -7,4 +7,9 @@ export class HealthCheckController {
   healthCheck(@Res() res: Response) {
     return res.status(HttpStatus.OK).send('OK');
   }
+
+  @Get('jinwoo')
+  helloJinwoo(@Res() res: Response) {
+    return res.status(HttpStatus.OK).send('OK');
+  }
 }
