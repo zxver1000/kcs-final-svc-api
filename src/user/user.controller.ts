@@ -38,4 +38,12 @@ export class UserController {
   createUser(@Body() user: UserCreateDto) {
     return this.userService.createUser(user);
   }
+  @Post('reset')
+  @UseGuards(JwtAuthGuard)
+  resetPassword(@CurrentUser() user) {
+    if (!user) {
+      return new UnauthorizedException('유저 정보를 확인해 주세요.');
+    }
+    return this.userService.resetPassword(user.email);
+  }
 }

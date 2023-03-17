@@ -1,5 +1,6 @@
 import { UserMicroserviceDataWrapper } from './../common/data/user.microservice.dto';
 import {
+  ConsoleLogger,
   HttpException,
   HttpStatus,
   Inject,
@@ -107,6 +108,36 @@ export class UserService {
       }
     }
 
+    return result;
+  }
+  //reset Password
+  async resetPassword(email: string): Promise<UserMicroserviceDataWrapper> {
+    console.log('fzds');
+    console.log(email);
+    const result = await lastValueFrom(
+      this.userClient
+        .send(
+          {
+            cmd: 'reset_password',
+          },
+          {
+            email,
+          },
+        )
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+    console.log('왜안가져옴');
+    console.log(result);
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+    console.log(result);
+    console.log('d');
     return result;
   }
 }
