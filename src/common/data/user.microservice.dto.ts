@@ -1,6 +1,7 @@
-import { UserMicroserviceDto } from './../../user/data/dto/user.dto';
+import { UserReadOnly } from '../../user/data/user.schema';
+
 export interface UserMicroserviceDataWrapper {
   success: boolean;
   code: number;
-  result?: UserMicroserviceDto[] | boolean;
+  result?: UserReadOnly[] | boolean;
 }

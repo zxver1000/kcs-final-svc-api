@@ -5,14 +5,16 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom, timeout } from 'rxjs';
-import { UserCreateDto } from './data/dto/user-create.dto';
-import { UserMicroserviceDto } from './data/dto/user.dto';
+import { UserCreateDto, UserPasswordDto } from './data/dto/user-create.dto';
+import { UserReadOnly } from './data/user.schema';
 
 @Injectable()
 export class UserService {
+  private logger = new Logger('UserService');
   private gatewayTimeout: number;
   constructor(
     @Inject('MS-User')
@@ -135,12 +137,39 @@ export class UserService {
       }
     }
 
+    this.logger.debug('createUser.result:', result);
+
     return result;
   }
 
-  async deleteUser(
-    user: UserMicroserviceDto,
-  ): Promise<UserMicroserviceDataWrapper> {
+  async verifyEmail(message: string): Promise<UserMicroserviceDataWrapper> {
+    const result = await lastValueFrom(
+      this.userClient
+        .send(
+          {
+            cmd: 'verify_user',
+          },
+          {
+            message,
+          },
+        )
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
+    return result;
+  }
+
+  async deleteUser(user: UserReadOnly): Promise<UserMicroserviceDataWrapper> {
     const result = await lastValueFrom(
       this.userClient
         .send(
@@ -198,10 +227,61 @@ export class UserService {
     return result;
   }
 
+  async updateUserPassword(
+    user: UserPasswordDto,
+    userid: string,
+  ): Promise<UserMicroserviceDataWrapper> {
+    const result = await lastValueFrom(
+      this.userClient
+        .send(
+          {
+            cmd: 'update_password',
+          },
+          {
+            user,
+            userid,
+          },
+        )
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
+    return result;
+  }
+
   async findUser(email: string): Promise<UserMicroserviceDataWrapper> {
     const result = await lastValueFrom(
       this.userClient
         .send({ cmd: 'find_user' }, { email })
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
+    return result;
+  }
+
+  async findNickname(nickname: string): Promise<UserMicroserviceDataWrapper> {
+    const result = await lastValueFrom(
+      this.userClient
+        .send({ cmd: 'read_nickname' }, { nickname })
         .pipe(timeout(this.gatewayTimeout)),
     );
 

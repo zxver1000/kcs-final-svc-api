@@ -1,10 +1,8 @@
-import { UserMicroserviceDto } from './../../user/data/dto/user.dto';
 import { UserService } from '../../user/user.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginRequestDto } from '../jwt/dto/login.request.dto';
-import * as bcrypt from 'bcryptjs';
-import { plainToClass } from 'class-transformer';
+import { UserReadOnly } from 'src/user/data/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +10,7 @@ export class AuthService {
   //* 해당 내용이 DB에 존재하는가, 서로 옳은 내용인가 유효성 검사
   //* 이를 위한 Dependency Injection
   //* JwtService는 auth.module 아래의 JwtModule.register ... 를 통해 사용 가능
+  private logger = new Logger('AuthService');
   constructor(
     private readonly userService: UserService,
     private jwtService: JwtService,
@@ -35,14 +34,20 @@ export class AuthService {
       throw new UnauthorizedException('이메일과 비밀번호를 확인해주세요.');
     }
 
-    const user: UserMicroserviceDto = fromUserService.result[0];
+    const user: UserReadOnly = fromUserService.result[0];
+    this.logger.debug('jwtLogIn.user: ', user);
 
     if (typeof user === 'boolean') {
       throw new UnauthorizedException('이메일과 비밀번호를 확인해주세요.');
     }
 
     //* JWT 반환
-    const payload = { email: email, sub: user.id, nickname: user.nickname };
+    const payload = {
+      email: email,
+      sub: user.id,
+      nickname: user.nickname,
+      profileimage: user.profileimage,
+    };
 
     return {
       token: this.jwtService.sign(payload),

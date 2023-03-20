@@ -2,6 +2,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
+import * as path from 'path';
+import * as bodyParser from 'body-parser';
 
 class Application {
   static instance: Application;
@@ -54,6 +56,9 @@ class Application {
       origin: this.corsOriginList,
       credentials: true,
     });
+
+    this.server.use(bodyParser.json({ limit: '50mb' }));
+    this.server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
     this.logger.log('Setting ValidationPipe...');
     this.server.useGlobalPipes(new ValidationPipe({ transform: true }));

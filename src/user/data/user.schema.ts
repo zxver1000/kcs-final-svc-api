@@ -25,6 +25,7 @@ export class User extends Document {
   })
   @Prop({
     require: true,
+    unique: true,
   })
   @IsString()
   @IsNotEmpty()
@@ -52,7 +53,10 @@ export class User extends Document {
     required: true,
     default: false,
   })
-  @Prop()
+  @Prop({
+    required: true,
+    default: false,
+  })
   @IsBoolean()
   emailValid: boolean;
 
@@ -83,3 +87,11 @@ _UserSchema.set('toObject', { virtuals: true });
 _UserSchema.set('toJSON', { virtuals: true });
 
 export const UserSchema = _UserSchema;
+
+export interface UserReadOnly {
+  id: string;
+  email: string;
+  emailValid: boolean;
+  nickname: string;
+  profileimage: string;
+}

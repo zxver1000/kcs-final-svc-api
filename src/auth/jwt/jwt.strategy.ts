@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserMicroserviceDto } from '../../user/data/dto/user.dto';
+import { UserReadOnly } from 'src/user/data/user.schema';
 import { UserService } from '../../user/user.service';
 import { Payload } from './jwt.payload';
 
@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: Payload): Promise<UserMicroserviceDto> {
+  async validate(payload: Payload): Promise<UserReadOnly> {
     this.logger.debug('payload', payload);
     const msDataFromUserServer = await this.userService.getUserById(
       payload.sub,
@@ -32,7 +32,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     try {
       const user = msDataFromUserServer.result[0];
-
       return user;
     } catch (e) {
       throw new UnauthorizedException('유저 정보를 확인해 주세요.');

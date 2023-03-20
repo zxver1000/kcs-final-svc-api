@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Render } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -8,5 +8,20 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+  @Get('try')
+  @Render('index')
+  root() {
+    return {
+      data: 'hello',
+    };
+  }
+
+  @Get('ex-margin')
+  @Render('examples/margin')
+  margin() {
+    return {
+      data: 'hello',
+    };
   }
 }

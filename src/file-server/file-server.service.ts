@@ -9,7 +9,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom, timeout } from 'rxjs';
 import { FileInfoMicroserviceDataWrapper } from 'src/common/data/file-info.microservice.dto';
-import { UserMicroserviceDto } from 'src/user/data/dto/user.dto';
+import { UserReadOnly } from 'src/user/data/user.schema';
 
 @Injectable()
 export class FileServerService {
@@ -41,13 +41,42 @@ export class FileServerService {
 
   async uploadFile(
     files: Express.Multer.File[],
-    user: UserMicroserviceDto,
+    user: UserReadOnly,
   ): Promise<FileInfoMicroserviceDataWrapper> {
     this.logger.debug('uploadFile.user:', user);
     const result = await lastValueFrom(
       this.fileClient
         .send(
           { cmd: 'create_file' },
+          // { user, files },
+          { userid: user.id, files },
+        )
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
+    this.logger.debug('uploadFile.result:', result);
+    return result;
+  }
+
+  async uploadProfileFile(
+    files: Express.Multer.File[],
+    user: UserReadOnly,
+  ): Promise<FileInfoMicroserviceDataWrapper> {
+    this.logger.debug('uploadFile.user:', user);
+    const result = await lastValueFrom(
+      this.fileClient
+        .send(
+          { cmd: 'create_file_profile' },
           // { user, files },
           { userid: user.id, files },
         )

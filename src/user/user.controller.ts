@@ -12,11 +12,12 @@ import {
   Patch,
   Delete,
   Logger,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserCreateDto } from './data/dto/user-create.dto';
+import { UserCreateDto, UserPasswordDto } from './data/dto/user-create.dto';
 import { CurrentUser } from '../common/decorator/user.decorator';
-import { UserMicroserviceDto } from './data/dto/user.dto';
+import { UserReadOnly } from './data/user.schema';
 
 @Controller('user')
 export class UserController {
@@ -26,48 +27,62 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  getCurrentUser(@CurrentUser() user: UserMicroserviceDto) {
-    if (!user) {
-      return new UnauthorizedException('유저 정보를 확인해 주세요.');
-    }
-    return this.userService.getUserById(user.id);
-  }
-
   @Post('login')
-  logIn(@Body() data: LoginRequestDto) {
-    return this.authService.jwtLogIn(data);
+  async logIn(@Body() data: LoginRequestDto) {
+    const result = await this.authService.jwtLogIn(data);
+    this.logger.debug('login result', result);
+    return result;
   }
 
   @Post('find')
-  findUser(@Body('email') email: string) {
-    return this.userService.findUser(email);
+  async findUser(@Body('email') email: string) {
+    return await this.userService.findUser(email);
+  }
+
+  @Get('nickname/:nickname')
+  async findNickname(@Param('nickname') nickname: string) {
+    return await this.userService.findNickname(nickname);
+  }
+
+  @Post()
+  async createUser(@Body() user: UserCreateDto) {
+    return await this.userService.createUser(user);
+  }
+
+  @Get('verifyEmail/:message')
+  async verifyEmail(@Param('message') encryptedMessage: string) {
+    this.logger.debug('verifyEmail:', encryptedMessage);
+    return await this.userService.verifyEmail(encryptedMessage);
+  }
+
+  //* Guard Section
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async getCurrentUser(@CurrentUser() user: UserReadOnly) {
+    if (!user) {
+      return new UnauthorizedException('유저 정보를 확인해 주세요.');
+    }
+    return await this.userService.getUserById(user.id);
   }
 
   @Patch()
   @UseGuards(JwtAuthGuard)
-  updateUser(
-    @Body() data: UserCreateDto,
-    @CurrentUser() user: UserMicroserviceDto,
-  ) {
-    if (!user) {
-      return new UnauthorizedException('유저 정보를 확인해 주세요.');
-    }
-
-    console.log('currentUser:', user);
-    return this.userService.modifyUserInformation(data, user.id);
+  async updateUser(@Body() data) {
+    this.logger.debug('updateUser.data: ', data);
+    return await this.userService.modifyUserInformation(data.user, data.userid);
   }
 
-  @Post()
-  createUser(@Body() user: UserCreateDto) {
-    return this.userService.createUser(user);
+  @Patch('secret')
+  @UseGuards(JwtAuthGuard)
+  async updatePassword(@Body() data, @CurrentUser() user) {
+    this.logger.debug('updatePassword.data: ', data, 'user:', user);
+    return await this.userService.updateUserPassword(data.user, user.id);
   }
 
   @Delete()
   @UseGuards(JwtAuthGuard)
-  deleteUser(@CurrentUser() user: UserMicroserviceDto) {
+  async deleteUser(@CurrentUser() user: UserReadOnly) {
     this.logger.debug('controller.deleteUser', user);
-    return this.userService.deleteUser(user);
+    return await this.userService.deleteUser(user);
   }
 }

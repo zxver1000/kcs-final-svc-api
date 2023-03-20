@@ -1,23 +1,26 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Post,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation } from '@nestjs/swagger';
 import { FileServerService } from './file-server.service';
 import { CurrentUser } from '../common/decorator/user.decorator';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
-import { UserMicroserviceDto } from '../user/data/dto/user.dto';
+import { UserReadOnly } from 'src/user/data/user.schema';
 
 @Controller('files')
 @UseGuards(JwtAuthGuard)
 export class FileServerController {
+  private logger = new Logger('FileServerController');
   constructor(private readonly fileService: FileServerService) {}
 
   @Get(':id')
@@ -30,16 +33,23 @@ export class FileServerController {
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadFile(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @CurrentUser() user: UserMicroserviceDto,
+    @CurrentUser() user: UserReadOnly,
   ) {
     return await this.fileService.uploadFile(files, user);
+  }
+
+  @ApiOperation({ summary: '유저 프로필 업로드 ' })
+  @Post('profile')
+  async uploadProfile(@Body() file, @CurrentUser() user: UserReadOnly) {
+    const _file: Express.Multer.File = file.file;
+    return await this.fileService.uploadProfileFile([_file], user);
   }
 
   @ApiOperation({ summary: '저장된 파일 삭제 기능 ' })
   @Delete('post/:id')
   async deleteFile(
     @Param('id') fileid: string,
-    @CurrentUser() user: UserMicroserviceDto,
+    @CurrentUser() user: UserReadOnly,
   ) {
     return await this.fileService.deleteFile(fileid, user.id);
   }

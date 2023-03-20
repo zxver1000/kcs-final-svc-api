@@ -1,8 +1,8 @@
 import { UserCreateDto } from '../../data/dto/user-create.dto';
 import { LoginRequestDto } from '../../../auth/jwt/dto/login.request.dto';
 import { UserMicroserviceDataWrapper } from '../../../common/data/user.microservice.dto';
-import { UserMicroserviceDto } from '../../data/dto/user.dto';
 import { HttpStatus } from '@nestjs/common';
+import { UserReadOnly } from 'src/user/data/user.schema';
 
 export const mockJwt = {
   token:
@@ -18,14 +18,15 @@ export const mockUserCreateDto: UserCreateDto = {
   email: 'test@email.com',
   password: 'test-password',
   nickname: 'test-nickname',
+  profileimage: 'test-profileimage',
 };
 
-export const mockUserMicroserviceDto: UserMicroserviceDto = {
+export const mockUserMicroserviceDto: UserReadOnly = {
   id: 'test-id',
   email: 'test-email',
+  emailValid: true,
   nickname: 'test-nickname',
   profileimage: 'test-profile',
-  password: 'test-password',
 };
 
 //* 실제론 위 자료형으로 가능하지만, 나는 microservice 통신을 통해 MicroserviceDataWrapper 형식을 가져오기 때문에
