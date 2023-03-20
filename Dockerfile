@@ -1,7 +1,8 @@
 FROM node:16-alpine
+
 LABEL email="dev.whoan@gmail.com"
 LABEL name="Eugene Minwhoan Kim"
-LABEL version="0.0.1"
+LABEL version="0.0.2"
 LABEL description="TripDiary API Gateway"
 
 ###################
@@ -19,7 +20,8 @@ WORKDIR /app
 COPY --chown=node:node package*.json ./
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
-RUN npm ci
+
+RUN npm ci --verbose
 
 # Bundle app source
 COPY --chown=node:node . .
@@ -47,7 +49,7 @@ ENV NODE_ENV production
 # Run the build command which creates the production bundle
 RUN npm run build
 
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --only=production --verbose && npm cache clean --force
 
 USER node
 
