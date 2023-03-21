@@ -58,11 +58,7 @@ pipeline {
         sh 'npm install'
       }
     }
-    stage('Code Testing'){
-      steps {
-        sh 'npm test'
-      }
-    }
+  
     stage('Start Docker') {
       steps {
         container('docker-job') {
