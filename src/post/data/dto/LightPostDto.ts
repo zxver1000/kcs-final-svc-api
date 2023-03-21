@@ -1,7 +1,7 @@
 import { PickType } from '@nestjs/swagger';
-import { Outlay } from '../post.Outlay';
+import { Outlay } from '../info/post.outlay';
 import { Post } from '../post.schema';
-import { Weather } from '../post.Weather';
+import { Weather } from '../info/post.weather';
 
 export interface LightPost_ {
   Outlay: Outlay;

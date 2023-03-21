@@ -1,5 +1,6 @@
 import { Controller, Get, HttpStatus, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { isArray } from 'class-validator';
 import { rmSync } from 'fs';
 import { SuccessInterceptor } from 'src/common/interceptor/successinterceptor/successinterceptor.interceptor';
 import { Post } from './data/post.schema';
