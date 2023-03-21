@@ -32,19 +32,14 @@ export class Location {
     if (cityName) this.cityName = cityName;
   }
 
-  @Prop()
   longitude: Number = null;
 
-  @Prop()
   latitude: Number = null;
 
-  @Prop()
   countryName: string = null;
 
-  @Prop()
   cityName: string = null;
 
-  @Prop()
   placeName: string = null;
 }
 

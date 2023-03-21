@@ -5,7 +5,7 @@ import { Document, HydratedDocument, Types } from 'mongoose';
 import { PostDate, PostDateDeserialization } from './post.PostDate';
 import { Outlay, OutLayDeserialization } from './post.Outlay';
 import { Weather, WeatherDeserialization } from './post.Weather';
-import { Adapter, PostAdapter } from './post.schema.adpater';
+
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 import { LightPost_ } from './dto/LightPostDto';
 
@@ -57,6 +57,8 @@ export class Post extends Document implements LightPost_ {
 
   @Prop()
   file_id: string[] = null;
+  @Prop()
+  file_path: string[] = null;
 
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts

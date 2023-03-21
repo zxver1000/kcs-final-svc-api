@@ -73,6 +73,8 @@ export class PostService {
     PostId: string,
     userid: string,
   ): Promise<number | Post | object> {
+    if (PostId.length != 24) return HttpStatus.BAD_REQUEST;
+
     try {
       let result = await this.PostRepositroy.getPost(PostId);
       if (typeof result === 'number') {
@@ -91,8 +93,6 @@ export class PostService {
     page_num: number,
     userid: string,
   ): Promise<number | LightPostDto[]> {
-    console.log('fdsfs');
-    console.log(page_num);
     if (page_num == null || isNaN(page_num)) return HttpStatus.BAD_REQUEST;
 
     try {

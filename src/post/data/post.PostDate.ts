@@ -5,10 +5,9 @@ export class PostDate {
     if (from) this.from = from;
     if (to) this.to = to;
   }
-  @Prop()
+
   from: Date = null;
 
-  @Prop()
   to: Date = null;
 }
 

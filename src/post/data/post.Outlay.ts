@@ -15,19 +15,15 @@ export class Outlay {
     if (memo) this.memo = memo;
     if (title) this.title = title;
   }
-  @Prop()
+
   data: Date = null;
 
-  @Prop()
   location: Location = null;
 
-  @Prop()
   amount: Number = null;
 
-  @Prop()
   memo: string = null;
 
-  @Prop()
   title: string = null;
 }
 

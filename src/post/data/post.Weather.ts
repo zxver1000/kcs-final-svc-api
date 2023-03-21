@@ -1,14 +1,15 @@
 import { Prop } from '@nestjs/mongoose';
+import { Temperature } from './post.Temperature';
+import { WeatherInfo } from './post.weatherInfo';
 
 export class Weather {
   constructor(weather?: WeatherInfo, temperature?: Temperature) {
     if (weather) this.weather = weather;
     if (temperature) this.temperature = temperature;
   }
-  @Prop()
+
   weather: WeatherInfo = null;
 
-  @Prop()
   temperature: Temperature = null;
 }
 

@@ -65,9 +65,4 @@ export class PostController {
 
     return result;
   }
-
-  @Get('write')
-  writePersonalDiary() {}
-  @Get('Read')
-  async readPersnalDiary() {}
 }
