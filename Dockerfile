@@ -2,7 +2,7 @@ FROM node:16-alpine
 
 LABEL email="dev.whoan@gmail.com"
 LABEL name="KHH"
-LABEL version="0.0.2"
+LABEL version="0.0.1" 
 LABEL description="TripDiary Post"
 
 ###################
