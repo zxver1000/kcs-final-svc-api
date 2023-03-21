@@ -16,8 +16,6 @@ import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { AuthService } from 'src/auth/service/auth.service';
 import { CurrentUser } from 'src/common/decorator/user.decorator';
-import { LightPostDto } from './data/dto/LightPostDto';
-import { PostCreateDto } from './data/dto/post.createDto';
 
 import { PostService } from './post.service';
 

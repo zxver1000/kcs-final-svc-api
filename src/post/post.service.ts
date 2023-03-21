@@ -2,7 +2,6 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom, timeout } from 'rxjs';
 import { UserMicroserviceDataWrapper } from 'src/common/data/user.microservice.dto';
-import { PostCreateDto } from './data/dto/post.createDto';
 @Injectable()
 export class PostService {
   private gatewayTimeout: number;
