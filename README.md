@@ -101,3 +101,42 @@ DETET()
 
 
 
+
+
+# .env File
+
+```
+[Service]
+HEALTH_PORT=3184
+PORT=3084
+
+[DB]
+MONGODB_URI="mongodb://loalhost:27017/"
+
+[Redis]
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=redis_password
+
+[UserAuth]
+JWT_SECRET=jwt_secret_test
+
+[Email]
+MAILER_EMAIL=mail_id
+MAILER_PASSWORD=mail_password
+
+[AES]
+AES_SECRET=aes_secret
+
+[CORS]
+CORS_ORIGIN_LIST=localhost
+```
+
+
+
+
+
+
+
+
+
