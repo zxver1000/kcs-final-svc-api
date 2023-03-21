@@ -84,7 +84,7 @@ pipeline {
             git config --global user.name "dev-whoan"
             git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/post post
             cd post
-            sed -i "19s/.*/        image: devwhoan\\/kcs-user:${DEPLOY_VERSION}${BUILD_NUMBER}/" post.yaml
+            sed -i "19s/.*/        image: devwhoan\\/kcs-post:${DEPLOY_VERSION}${BUILD_NUMBER}/" post.yaml
             cat post.yaml
             git add .
             git commit -m "feat. Version ${DEPLOY_VERSION}${BUILD_NUMBER}"
