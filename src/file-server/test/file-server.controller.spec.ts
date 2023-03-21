@@ -10,7 +10,7 @@ import { FileServerController } from '../file-server.controller';
 import { Test } from '@nestjs/testing';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { FileInfoMicroserviceDataWrapper } from '../../common/data/file-info.microservice.dto';
-import { User } from '../../user/data/user.schema';
+import { User, UserReadOnly } from '../../user/data/user.schema';
 
 //* Find Actual Service, It will Auto Mock from __mocks__
 jest.mock('../file-server.service');
@@ -92,7 +92,7 @@ describe('FileServerController', () => {
       const user = {
         email: 'test@test.com',
         id: 'test-id',
-      } as User;
+      } as UserReadOnly;
 
       //    @Payload('userid') userid: string,
       //    @Payload('files') files: Express.Multer.File[],
