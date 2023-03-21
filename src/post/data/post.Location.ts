@@ -1,7 +1,7 @@
 import { Type } from '@nestjs/common';
 import { Prop } from '@nestjs/mongoose';
 import mongoose, { Types } from 'mongoose';
-import { Double } from 'typeorm';
+
 /*
 constructor(
     longitude: Number,

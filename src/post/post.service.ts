@@ -91,7 +91,9 @@ export class PostService {
     page_num: number,
     userid: string,
   ): Promise<number | LightPostDto[]> {
-    if (isNaN(page_num)) return HttpStatus.BAD_REQUEST;
+    console.log('fdsfs');
+    console.log(page_num);
+    if (page_num == null || isNaN(page_num)) return HttpStatus.BAD_REQUEST;
 
     try {
       let result = this.PostRepositroy.getPosts(page_num, userid);

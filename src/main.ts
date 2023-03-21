@@ -9,6 +9,7 @@ class MicroApplication {
   private logger = new Logger('TripDiary - Post');
   private DEV_MODE: boolean;
   private PORT: string;
+  private HEALTH_PORT: string;
   private corsOriginList: string[];
   private ADMIN_USER: string;
   private ADMIN_PASSWORD: string;
@@ -30,7 +31,8 @@ class MicroApplication {
     if (!process.env.JWT_SECRET) this.logger.error('Set "JWT_SECRET" env');
 
     this.DEV_MODE = process.env.NODE_ENV === 'production' ? false : true;
-    this.PORT = process.env.PORT || '3081';
+    this.PORT = process.env.PORT || '3084';
+    this.HEALTH_PORT = process.env.HEALTHPORT || '3184';
     this.corsOriginList = process.env.CORS_ORIGIN_LIST
       ? process.env.CORS_ORIGIN_LIST.split(',').map((origin) => origin.trim())
       : ['*'];
@@ -69,7 +71,7 @@ class MicroApplication {
     this.server.connectMicroservice({
       transport: Transport.TCP,
       options: {
-        host: 'localhost',
+        host: '0.0.0.0',
         port: this.PORT,
       },
     });
@@ -81,7 +83,7 @@ class MicroApplication {
       },
     });
     await this.server.startAllMicroservices();
-    await this.server.listen(this.PORT);
+    await this.server.listen(this.HEALTH_PORT);
   }
 
   startLog() {
