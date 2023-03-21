@@ -71,7 +71,7 @@ class MicroApplication {
     this.server.connectMicroservice({
       transport: Transport.TCP,
       options: {
-        //  host: '0.0.0.0',
+        host: '0.0.0.0',
         port: this.PORT,
       },
     });
