@@ -87,6 +87,7 @@ pipeline {
             sed -i "19s/.*/        image: devwhoan\\/kcs-post:${DEPLOY_VERSION}${BUILD_NUMBER}/" post.yaml
             cat post.yaml
             echo post.yaml
+            echo "hihi"
          
             git add .
             git commit -m "feat. Version ${DEPLOY_VERSION}${BUILD_NUMBER}"
