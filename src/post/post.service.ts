@@ -7,13 +7,13 @@ import {
   Location,
   LocationDeserialization,
   LocationSerialization,
-} from './data/post.Location';
+} from './data/info/post.location';
 import {
   Outlay,
   OutLayDeserialization,
   OutLaySerialization,
-} from './data/post.Outlay';
-import { PostDate, PostDateDeserialization } from './data/post.PostDate';
+} from './data/info/post.outlay';
+import { PostDate, PostDateDeserialization } from './data/info/post.postdate';
 import { PostRepository } from './data/post.repository';
 import {
   PostSchema,
@@ -22,7 +22,7 @@ import {
   PostSchemaSerialization,
   PostSchemaDeserialization,
 } from './data/post.schema';
-import { Weather, WeatherDeserialization } from './data/post.Weather';
+import { Weather, WeatherDeserialization } from './data/info/post.weather';
 
 @Injectable()
 export class PostService {
@@ -80,6 +80,10 @@ export class PostService {
       if (typeof result === 'number') {
         return result;
       }
+      console.log('------------');
+      console.log(result);
+      console.log('----------------');
+      console.log(result.readOnlyData);
 
       if (!!result) {
         return result.readOnlyData;

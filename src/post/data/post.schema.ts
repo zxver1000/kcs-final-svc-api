@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
 import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Document, HydratedDocument, Types } from 'mongoose';
-import { PostDate, PostDateDeserialization } from './post.PostDate';
-import { Outlay, OutLayDeserialization } from './post.Outlay';
-import { Weather, WeatherDeserialization } from './post.Weather';
+import { PostDate, PostDateDeserialization } from './info/post.postdate';
+import { Outlay, OutLayDeserialization } from './info/post.outlay';
+import { Weather, WeatherDeserialization } from './info/post.weather';
 
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 import { LightPost_ } from './dto/LightPostDto';
@@ -67,6 +67,8 @@ export class Post extends Document implements LightPost_ {
     PostDate: PostDate;
     Outlay: Outlay;
     Weather: Weather;
+    file_id: string[];
+    file_path: string[];
   };
 
   readonly LightPost: {
@@ -87,6 +89,8 @@ _PostSchema.virtual('readOnlyData').get(function (this: Post) {
     PostDate: this.PostDate,
     Outlay: this.Outlay,
     Weather: this.Weather,
+    file_id: this.file_id,
+    file_path: this.file_path,
   };
 });
 _PostSchema.virtual('LightPost').get(function (this: Post) {
