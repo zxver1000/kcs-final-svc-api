@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 
 import { map, Observable } from 'rxjs';
-import { MicroserviceDataWrapper } from 'src/common/data/microservice.dto';
+import { MicroserviceDataWrapper } from '../../../common/data/microservice.dto';
 
 export function SuccessInterceptor(
   successCode: HttpStatus,
