@@ -1,7 +1,7 @@
 pipeline {
   environment { 
     dockerRepository = "devwhoan/kcs-user"
-    DEPLOY_VERSION ='0.0.${BUILD_NUMBER}'
+    DEPLOY_VERSION ='0.0.'
     gitCredential = credentials('Github-Repo')
     dockerImage = '' 
   }
@@ -70,12 +70,12 @@ pipeline {
           echo "Docker Login..."
           cat /agent-resource/cm/hub.txt | docker login --username devwhoan --password-stdin
           echo "Build Docker Image"
-          docker build -t $dockerRepository:$DEPLOY_VERSION .
+          docker build -t $dockerRepository:$DEPLOY_VERSION$BUILD_NUMBER .
           echo "Build Passed!"
           
           echo "Push Image to Hub"
-          docker push $dockerRepository:$DEPLOY_VERSION
-          echo "Succeed to Push the Image $dockerRepository:$DEPLOY_VERSION"
+          docker push $dockerRepository:$DEPLOY_VERSION$BUILD_NUMBER
+          echo "Succeed to Push the Image $dockerRepository:$DEPLOY_VERSION$BUILD_NUMBER"
           '''
         }
       }
@@ -88,10 +88,10 @@ pipeline {
             git config --global user.name "dev-whoan"
             git clone https://github.com/dev-whoan/kcs-final-svc-api-deploy -b deploy/api-gateway gateway
             cd gateway
-            sed -i "19s/.*/        image: devwhoan\\/kcs-apigateway:${DEPLOY_VERSION}/" gateway.yaml
+            sed -i "19s/.*/        image: devwhoan\\/kcs-apigateway:${DEPLOY_VERSION}${BUILD_NUMBER}/" gateway.yaml
             cat gateway.yaml
             git add .
-            git commit -m "feat. Version ${DEPLOY_VERSION}"
+            git commit -m "feat. Version ${DEPLOY_VERSION}${BUILD_NUMBER}"
             git push https://${gitCredential}@github.com/dev-whoan/kcs-final-svc-api-deploy deploy/api-gateway
           '''
         }
