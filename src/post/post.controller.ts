@@ -13,9 +13,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
-import { AuthService } from 'src/auth/service/auth.service';
-import { CurrentUser } from 'src/common/decorator/user.decorator';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { AuthService } from '../auth/service/auth.service';
+import { CurrentUser } from '../common/decorator/user.decorator';
 
 import { PostService } from './post.service';
 

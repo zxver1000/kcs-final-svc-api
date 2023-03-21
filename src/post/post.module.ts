@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
 
