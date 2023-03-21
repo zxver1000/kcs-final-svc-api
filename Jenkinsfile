@@ -86,6 +86,8 @@ pipeline {
             cd post
             sed -i "19s/.*/        image: devwhoan\\/kcs-post:${DEPLOY_VERSION}${BUILD_NUMBER}/" post.yaml
             cat post.yaml
+            echo post.yaml
+         
             git add .
             git commit -m "feat. Version ${DEPLOY_VERSION}${BUILD_NUMBER}"
             git push https://${gitCredential}@github.com/dev-whoan/kcs-final-svc-api-deploy deploy/post
