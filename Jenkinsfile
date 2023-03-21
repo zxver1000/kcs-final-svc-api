@@ -1,6 +1,6 @@
 pipeline {
   environment { 
-    dockerRepository = "devwhoan/kcs-apigateway"
+    dockerRepository = "devwhoan/kcs-user"
     DEPLOY_VERSION ='0.0.${BUILD_NUMBER}'
     gitCredential = credentials('Github-Repo')
     dockerImage = '' 
