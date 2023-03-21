@@ -2,7 +2,8 @@ FROM node:16-alpine
 
 LABEL email="dev.whoan@gmail.com"
 LABEL name="KHH"
-LABEL version="0.0.2"
+LABEL version="0.0.1" 
+
 LABEL description="TripDiary Post"
 
 ###################
@@ -68,4 +69,6 @@ COPY --chown=node:node --from=build /app/dist /user/dist
 # Start the server using the production build
 
 
+
 CMD [ "node", "/user/dist/main.js" ]
+
