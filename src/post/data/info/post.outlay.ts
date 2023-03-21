@@ -1,5 +1,5 @@
 import { Prop } from '@nestjs/mongoose';
-import { Location, LocationDeserialization } from './post.Location';
+import { Location, LocationDeserialization } from './post.location';
 
 export class Outlay {
   constructor(

@@ -3,15 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, PaginateModel } from 'mongoose';
 import { RedisManagerService } from 'src/redis-manager/redis-manager.service';
 import { LightPostDto, LightPost_ } from './dto/LightPostDto';
-import { Outlay, OutLayDeserialization } from './post.Outlay';
-import { PostDate, PostDateDeserialization } from './post.PostDate';
+import { Outlay, OutLayDeserialization } from './info/post.outlay';
+import { PostDate, PostDateDeserialization } from './info/post.postdate';
 import {
   Post,
   PostDocument,
   PostSchema,
   PostSchemaDeserialization,
 } from './post.schema';
-import { Weather, WeatherDeserialization } from './post.Weather';
+import { Weather, WeatherDeserialization } from './info/post.weather';
 
 export class PostRepository {
   constructor(
@@ -54,10 +54,12 @@ export class PostRepository {
     update_Data: object,
   ): Promise<number | Post> {
     const key = `${this.redisPrefixKey}/${id}`;
-    let keys = Object.keys(update_Data);
     let new_Post;
     let post = await this.PostModel.findById(id);
     let update = {};
+
+    if (update_Data == undefined) return HttpStatus.NO_CONTENT;
+
     if (update_Data['Outlay'] != undefined) {
       post.Outlay = OutLayDeserialization(update_Data['Outlay']);
     }
@@ -70,6 +72,10 @@ export class PostRepository {
     if (update_Data['file_id'] != undefined) {
       post.file_id = update_Data['file_id'];
     }
+    if (update_Data['file_path'] != undefined) {
+      post.file_path = update_Data['file_path'];
+    }
+
     const redisResult = await this.redisService.setCache(key, post);
     await post.save();
 
