@@ -26,14 +26,14 @@ export class PostController {
     private readonly authService: AuthService,
   ) {}
 
-  @Get(':data')
+  @Get(':postid')
   @UseGuards(JwtAuthGuard)
-  async getPost(@CurrentUser() user, @Param('data') data: string) {
+  async getPost(@CurrentUser() user, @Param('postid') postid: string) {
     if (!user) {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
 
-    return this.PostService.getPersonalDiary(data, user.id);
+    return this.PostService.getPersonalDiary(postid, user.id);
   }
 
   @Get()
