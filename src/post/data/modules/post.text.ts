@@ -28,6 +28,10 @@ export class PostText {
   getPreview(): string {
     return this.filepath;
   }
+
+  setOwner(owner: string) {
+    this.owner = owner;
+  }
 }
 
 export const deserializePostText = (target: object): PostText => {

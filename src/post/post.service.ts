@@ -55,6 +55,13 @@ export class PostService {
   ): Promise<number | object> {
     try {
       post.owner = userid;
+
+      for (let i = 0; i < post.log?.length; i++) {
+        const log = deserializePostText(post.log[i]);
+        log.setOwner(userid);
+        post.log[i] = log;
+      }
+
       const result = await this.postRepository.addToPostFromDB(post);
 
       if (typeof result === 'number') {

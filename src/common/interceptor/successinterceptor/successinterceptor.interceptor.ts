@@ -34,31 +34,33 @@ export function SuccessInterceptor(
       // ({ ...data, result: uploadedArray })));
     }
 
-    setDataAsMicroserviceDataWrapper(PostResult): MicroserviceDataWrapper {
-      const success = PostResult !== null;
+    setDataAsMicroserviceDataWrapper(postResult): MicroserviceDataWrapper {
+      const success = postResult !== null;
       const code = success ? successCode : HttpStatus.NO_CONTENT;
 
-      if (typeof PostResult === 'number') {
-        if (PostResult >= 200 && PostResult < 400) {
+      if (typeof postResult === 'number') {
+        if (postResult >= 200 && postResult < 400) {
           return {
             success: true,
-            code: PostResult,
+            code: postResult,
           };
         }
 
         return {
           success: false,
-          code: PostResult,
+          code: postResult,
         };
       }
 
-      if (!PostResult.length) {
-        PostResult = [PostResult];
+      this.logger.debug('postResult:', postResult);
+
+      if (!postResult.length) {
+        postResult = [postResult];
       }
 
       const result = [];
-      for (let i = 0; i < PostResult.length; i++) {
-        const _file = PostResult[i];
+      for (let i = 0; i < postResult.length; i++) {
+        const _file = postResult[i];
         result.push(_file);
       }
 

@@ -7,7 +7,7 @@ import { Outlay } from './modules/post.outlay';
 import { Weather } from './modules/post.weather';
 import { Location } from './modules/post.location';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
-import { PostText } from './modules/post.text';
+import { deserializePostText, PostText } from './modules/post.text';
 
 const options: SchemaOptions = {
   //* MongoDB 아래에 생성될 collection 이름 지정
@@ -16,6 +16,7 @@ const options: SchemaOptions = {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   id: true,
 };
+const DEFAULT_PREVIEW = '/img/logo.png';
 
 @Schema(options)
 export class Post extends Document {
@@ -123,13 +124,15 @@ _PostSchema.virtual('readOnlyData').get(function (this: Post) {
 });
 
 _PostSchema.virtual('lightReadOnlyData').get(function (this: Post) {
+  const preview = deserializePostText(this.log[0]);
+
   return {
     id: this.id,
     owner: this.owner,
     title: this.title,
     dates: this.dates,
     location: this.location,
-    preview: this.log[0]?.getPreview(),
+    preview: preview ? preview.getPreview() : DEFAULT_PREVIEW,
   };
 });
 

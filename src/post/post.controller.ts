@@ -1,11 +1,19 @@
-import { Controller, HttpStatus, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  HttpStatus,
+  Logger,
+  UseInterceptors,
+} from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { MicroserviceDataLogger } from 'src/common/interceptor/logger/logger.interceptor';
 import { SuccessInterceptor } from 'src/common/interceptor/successinterceptor/successinterceptor.interceptor';
 import { PostCreateDto } from './data/dto/post.create.dto';
 import { PostService } from './post.service';
 
 @Controller('post')
+@UseInterceptors(MicroserviceDataLogger('UserController'))
 export class PostController {
+  private logger = new Logger('PostController');
   constructor(private readonly PostService: PostService) {}
 
   @UseInterceptors(SuccessInterceptor(HttpStatus.OK))
@@ -14,7 +22,7 @@ export class PostController {
     @Payload('PostId') PostId: string,
     @Payload('userid') userid: string,
   ) {
-    const result = this.PostService.getPersonalDiary(PostId, userid);
+    const result = await this.PostService.getPersonalDiary(PostId, userid);
 
     return result;
   }
@@ -22,10 +30,11 @@ export class PostController {
   @UseInterceptors(SuccessInterceptor(HttpStatus.OK))
   @MessagePattern({ cmd: 'ListDiary' })
   async ListDiary(
-    @Payload('page_num') page_num: number,
+    @Payload('pageNum') pageNum: number,
     @Payload('userid') userid: string,
   ) {
-    return await this.PostService.ListDiary(page_num, userid);
+    if (!pageNum) pageNum = 1;
+    return await this.PostService.ListDiary(pageNum, userid);
   }
 
   @UseInterceptors(SuccessInterceptor(HttpStatus.CREATED))
@@ -34,8 +43,6 @@ export class PostController {
     @Payload('data') data: PostCreateDto,
     @Payload('userid') userid: string,
   ) {
-    console.log('ss');
-    console.log(data);
     const result = await this.PostService.addPersonalDiary(data, userid);
     return result;
   }
@@ -58,7 +65,7 @@ export class PostController {
     @Payload('userid') userid: string,
     @Payload('updateData') updateData: PostCreateDto,
   ) {
-    let result = await this.PostService.modifyPostFromDB(
+    const result = await this.PostService.modifyPostFromDB(
       postId,
       userid,
       updateData,
