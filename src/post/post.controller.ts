@@ -1,10 +1,7 @@
-import { Controller, Get, HttpStatus, UseInterceptors } from '@nestjs/common';
+import { Controller, HttpStatus, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { isArray } from 'class-validator';
-import { rmSync } from 'fs';
 import { SuccessInterceptor } from 'src/common/interceptor/successinterceptor/successinterceptor.interceptor';
 import { PostCreateDto } from './data/dto/post.create.dto';
-import { Post } from './data/post.schema';
 import { PostService } from './post.service';
 
 @Controller('post')
@@ -17,7 +14,7 @@ export class PostController {
     @Payload('PostId') PostId: string,
     @Payload('userid') userid: string,
   ) {
-    let result = this.PostService.getPersonalDiary(PostId, userid);
+    const result = this.PostService.getPersonalDiary(PostId, userid);
 
     return result;
   }
@@ -39,7 +36,7 @@ export class PostController {
   ) {
     console.log('ss');
     console.log(data);
-    let result = await this.PostService.addPersonalDiary(data, userid);
+    const result = await this.PostService.addPersonalDiary(data, userid);
     return result;
   }
 
@@ -49,7 +46,7 @@ export class PostController {
     @Payload('postId') postId: string[],
     @Payload('userid') userid: string,
   ) {
-    let result = await this.PostService.deletePersonalDiary(postId, userid);
+    const result = await this.PostService.deletePersonalDiary(postId, userid);
 
     return result;
   }
@@ -59,7 +56,7 @@ export class PostController {
   async modifyPersonalDiary(
     @Payload('postid') postId: string,
     @Payload('userid') userid: string,
-    @Payload('updateData') updateData: object,
+    @Payload('updateData') updateData: PostCreateDto,
   ) {
     let result = await this.PostService.modifyPostFromDB(
       postId,

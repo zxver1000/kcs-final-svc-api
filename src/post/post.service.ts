@@ -11,26 +11,38 @@ import { Post } from './data/post.schema';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postRepositroy: PostRepository) {}
-
-  private logger = new Logger('PostService Logger');
+  private logger = new Logger('PostService');
+  constructor(private readonly postRepository: PostRepository) {}
 
   async modifyPostFromDB(
-    id: string,
+    postid: string,
     userid: string,
-    updateData: object,
-  ): Promise<number | object> {
+    updateData: PostCreateDto,
+  ) {
     try {
-      let Post_data = await this.postRepositroy.getPost(id, userid);
+      const result = await this.postRepository.modifyPostFromDB(
+        userid,
+        postid,
+        updateData,
+      );
+      this.logger.debug('modifyPostFromDB.result', result);
 
-      if (typeof Post_data === 'number') return Post_data;
-
-      const result = await this.postRepositroy.modifyPostFromDB(id, updateData);
-
-      if (typeof result === 'number') {
+      if (!result) {
+        this.logger.error('modifyPostFromDB:: Internal Server Error Occured');
+        return HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+      if (typeof result === 'number') return result;
+      if (!!result) {
+        if (result.readOnlyData) {
+          return result.readOnlyData;
+        }
         return result;
       }
-      if (!!result) return result.readOnlyData;
+
+      this.logger.error(
+        'modifyPostFromDB:: Cannot get any result from userRepository.update',
+      );
+      return HttpStatus.NO_CONTENT;
     } catch (e) {
       this.logger.error(e.stack || e);
       return HttpStatus.INTERNAL_SERVER_ERROR;
@@ -38,34 +50,12 @@ export class PostService {
   }
 
   async addPersonalDiary(
-    data: PostCreateDto,
+    post: PostCreateDto,
     userid: string,
   ): Promise<number | object> {
     try {
-      let Outlay_Deserialization = deserializeOutlay(data.outlay);
-      let Weather_Deserialization = deserializePostWeather(data.Weather);
-      console.log(Outlay_Deserialization);
-      console.log(Weather_Deserialization);
-      let PostDate_Deserialization = deserializePostDate(data.dates);
-
-      console.log(PostDate_Deserialization);
-      let PostText_Deserialization = [];
-
-      if (data.log != null) {
-        for (let i = 0; i < data.log.length; i++) {
-          PostText_Deserialization.push(deserializePostText(data.log[i]));
-        }
-      }
-      let Location_Deserialization = deserializeLocation(data.location);
-      const result = await this.postRepositroy.addToPostFromDB(
-        Outlay_Deserialization,
-        Weather_Deserialization,
-        PostDate_Deserialization,
-        PostText_Deserialization,
-        Location_Deserialization,
-        data.title,
-        userid,
-      );
+      post.owner = userid;
+      const result = await this.postRepository.addToPostFromDB(post);
 
       if (typeof result === 'number') {
         return result;
@@ -80,13 +70,11 @@ export class PostService {
     }
   }
   async getPersonalDiary(
-    PostId: string,
+    postid: string,
     userid: string,
   ): Promise<number | Post | object> {
-    if (PostId.length != 24) return HttpStatus.BAD_REQUEST;
-
     try {
-      let result = await this.postRepositroy.getPost(PostId, userid);
+      const result = await this.postRepository.getPost(postid, userid);
       if (typeof result === 'number') {
         return result;
       }
@@ -99,13 +87,13 @@ export class PostService {
     }
   }
   async ListDiary(
-    page_num: number,
+    pageNum: number,
     userid: string,
   ): Promise<number | Array<object>> {
-    if (page_num == null || isNaN(page_num)) return HttpStatus.BAD_REQUEST;
+    if (!pageNum || isNaN(pageNum)) return HttpStatus.BAD_REQUEST;
 
     try {
-      let result = this.postRepositroy.getPosts(page_num, userid);
+      const result = this.postRepository.getPosts(pageNum, userid);
 
       return result;
     } catch (e) {
@@ -114,13 +102,16 @@ export class PostService {
     }
   }
 
-  async deletePersonalDiary(id: string[], userid: string): Promise<number> {
+  async deletePersonalDiary(
+    postIds: string[],
+    userid: string,
+  ): Promise<number> {
     try {
-      for (let i = 0; i < id.length; i++) {
-        let PostData = await this.postRepositroy.getPost(id[i], userid);
-        if (typeof PostData != 'number') {
-          let result = await this.postRepositroy.deletePostFromDB(
-            PostData,
+      for (let i = 0; i < postIds.length; i++) {
+        const post = await this.postRepository.getPost(postIds[i], userid);
+        if (typeof post != 'number') {
+          const result = await this.postRepository.deletePostFromDB(
+            post.id,
             userid,
           );
         }
