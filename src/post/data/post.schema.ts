@@ -7,6 +7,7 @@ import { Outlay } from './modules/post.outlay';
 import { Weather } from './modules/post.weather';
 import { Location } from './modules/post.location';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
+import { PostText } from './modules/post.text';
 
 const options: SchemaOptions = {
   //* MongoDB 아래에 생성될 collection 이름 지정
@@ -79,6 +80,12 @@ export class Post extends Document {
   @IsString()
   Weather: Weather;
 
+  @Prop({
+    required: true,
+  })
+  @IsString()
+  log: PostText[];
+
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts
   readonly readOnlyData: {
@@ -88,6 +95,7 @@ export class Post extends Document {
     dates: PostDate;
     location: Location;
     outlay: Outlay;
+    log: PostText[];
   };
 
   readonly lightReadOnlyData: {
@@ -109,6 +117,7 @@ _PostSchema.virtual('readOnlyData').get(function (this: Post) {
     dates: this.dates,
     location: this.location,
     outlay: this.outlay,
+    log: this.log,
   };
 });
 
