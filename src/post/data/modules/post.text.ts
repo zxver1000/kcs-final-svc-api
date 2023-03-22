@@ -24,6 +24,10 @@ export class PostText {
     };
     return JSON.stringify(obj);
   }
+
+  getPreview(): string {
+    return this.filepath;
+  }
 }
 
 export const deserializePostText = (target: object): PostText => {

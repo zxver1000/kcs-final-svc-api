@@ -1,6 +1,8 @@
 export class PostDate {
-  private from: Date;
-  private to: Date;
+  protected from: Date;
+  protected to: Date;
+  //* Date Type
+  //*
   constructor(from?: Date, to?: Date) {
     if (from) this.from = from;
     if (to) this.to = to;

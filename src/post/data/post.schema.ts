@@ -104,6 +104,7 @@ export class Post extends Document {
     title: string;
     dates: PostDate;
     location: Location;
+    preview: string;
   };
 }
 
@@ -128,6 +129,7 @@ _PostSchema.virtual('lightReadOnlyData').get(function (this: Post) {
     title: this.title,
     dates: this.dates,
     location: this.location,
+    preview: this.log[0]?.getPreview(),
   };
 });
 
@@ -144,6 +146,7 @@ export interface PostReadOnly {
   dates: PostDate;
   location: Location;
   outlay: Outlay;
+  log: PostText[];
 }
 
 export interface PostReadOnlyLight {
@@ -152,4 +155,5 @@ export interface PostReadOnlyLight {
   title: string;
   dates: PostDate;
   location: Location;
+  preview: string;
 }
