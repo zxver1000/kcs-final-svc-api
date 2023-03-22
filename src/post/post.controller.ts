@@ -3,6 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { isArray } from 'class-validator';
 import { rmSync } from 'fs';
 import { SuccessInterceptor } from 'src/common/interceptor/successinterceptor/successinterceptor.interceptor';
+import { PostCreateDto } from './data/dto/post.create.dto';
 import { Post } from './data/post.schema';
 import { PostService } from './post.service';
 
@@ -33,9 +34,11 @@ export class PostController {
   @UseInterceptors(SuccessInterceptor(HttpStatus.CREATED))
   @MessagePattern({ cmd: 'create_post' })
   async addPersonalDiary(
-    @Payload('data') data: object,
+    @Payload('data') data: PostCreateDto,
     @Payload('userid') userid: string,
   ) {
+    console.log('ss');
+    console.log(data);
     let result = await this.PostService.addPersonalDiary(data, userid);
     return result;
   }

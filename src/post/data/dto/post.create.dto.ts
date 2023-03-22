@@ -1,11 +1,11 @@
-import { Post } from '@nestjs/common';
 import { PickType } from '@nestjs/swagger';
+import { Post } from '../post.schema';
 
 export class PostCreateDto extends PickType(Post, [
   'title',
   'dates',
   'location',
-  'weater',
   'outlay',
   'log',
+  'Weather',
 ] as const) {}

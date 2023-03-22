@@ -1,3 +1,5 @@
+import { targetModulesByContainer } from '@nestjs/core/router/router-module';
+
 export class Location {
   private longitude: number;
   private latitude: number;
@@ -32,7 +34,7 @@ export class Location {
 }
 
 export const deserializeLocation = (target: object): Location => {
-  if (!target) null;
+  if (!target || target == undefined) return null;
 
   return new Location(
     target['longitude'],
