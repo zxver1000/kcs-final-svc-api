@@ -78,7 +78,7 @@ export class Post extends Document {
     required: true,
   })
   @IsString()
-  Weather: Weather;
+  weather: Weather;
 
   @Prop({
     required: true,

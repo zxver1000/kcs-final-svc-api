@@ -14,8 +14,7 @@ export class PostRepository {
     @InjectModel(Post.name) private postModel: PaginateModel<Post>,
     private readonly redisService: RedisManagerService,
   ) {}
-  private readonly redisPrefixKey = 'Post';
-
+  private readonly redisPrefixKey = 'post';
   async addToPostFromDB(
     Outlay: Outlay,
     Weather: Weather,
