@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { FileServerModule } from './file-server/file-server.module';
 import { LoggerMiddleware } from './common/interceptor/logger/logger.middleware';
 import { UserModule } from './user/user.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     FileServerModule,
     UserModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -21,10 +21,7 @@ import { PostService } from './post.service';
 
 @Controller('post')
 export class PostController {
-  constructor(
-    private readonly PostService: PostService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly postService: PostService) {}
 
   @Get(':postid')
   @UseGuards(JwtAuthGuard)
@@ -33,18 +30,21 @@ export class PostController {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
 
-    return this.PostService.getPersonalDiary(postid, user.id);
+    return this.postService.getPersonalDiary(postid, user.id);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getPosts(@CurrentUser() user, @Req() data: Request) {
+  async getPosts(
+    @CurrentUser() user,
+    @Req() data: Request,
+    @Query('pagenum') pagenum: number,
+  ) {
     if (!user) {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
 
-    let page_num = Number(data.query['pagenum']);
-    return await this.PostService.listDiaries(page_num, user.id);
+    return await this.postService.listDiaries(pagenum, user.id);
   }
 
   @Post()
@@ -54,7 +54,7 @@ export class PostController {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
 
-    return await this.PostService.addPersonalDiary(data, user.id);
+    return await this.postService.addPersonalDiary(data, user.id);
   }
   @Delete()
   @UseGuards(JwtAuthGuard)
@@ -66,7 +66,7 @@ export class PostController {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
 
-    return await this.PostService.deletePersonalDiary(postId, user.id);
+    return await this.postService.deletePersonalDiary(postId, user.id);
   }
   @Patch()
   @UseGuards(JwtAuthGuard)
@@ -78,6 +78,6 @@ export class PostController {
     if (!user) {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
-    return await this.PostService.modifyPersonalDiary(postid, user.id, data);
+    return await this.postService.modifyPersonalDiary(postid, user.id, data);
   }
 }

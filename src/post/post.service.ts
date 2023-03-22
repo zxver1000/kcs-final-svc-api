@@ -51,7 +51,7 @@ export class PostService {
   }
 
   async listDiaries(
-    page_num: number,
+    pageNum: number,
     userid: string,
   ): Promise<UserMicroserviceDataWrapper | number> {
     const result = await lastValueFrom(
@@ -61,7 +61,7 @@ export class PostService {
             cmd: 'ListDiary',
           },
           {
-            page_num,
+            pageNum,
             userid,
           },
         )
