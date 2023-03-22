@@ -3,20 +3,24 @@ import { Temperature } from '../enum/post.Temperature';
 import { WeatherInfo } from '../enum/post.weatherInfo';
 
 export class Weather {
+  private weather: WeatherInfo;
+  private temperature: Temperature;
   constructor(weather?: WeatherInfo, temperature?: Temperature) {
     if (weather) this.weather = weather;
     if (temperature) this.temperature = temperature;
   }
 
-  weather: WeatherInfo = null;
-  temperature: Temperature = null;
+  serialize(): string {
+    const obj = {
+      from: this.weather,
+      to: this.temperature,
+    };
+    return JSON.stringify(obj);
+  }
 }
 
-export function WeatherDeserialization(deserial: object): Weather {
-  if (deserial == undefined) return new Weather();
-  const result = new Weather();
-  if (deserial['weather']) result.weather = deserial['weather'];
-  if (deserial['temperature']) result.temperature = deserial['temperature'];
+export const deserializePostWeather = (target: object): Weather => {
+  if (!target) null;
 
-  return result;
-}
+  return new Weather(target['weather'], target['temperature']);
+};

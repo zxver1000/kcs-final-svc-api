@@ -1,22 +1,22 @@
 export class PostDate {
+  private from: Date;
+  private to: Date;
   constructor(from?: Date, to?: Date) {
     if (from) this.from = from;
     if (to) this.to = to;
   }
 
-  from: Date = null;
-  to: Date = null;
+  serialize(): string {
+    const obj = {
+      from: this.from,
+      to: this.to,
+    };
+    return JSON.stringify(obj);
+  }
 }
 
-export function PostDateSerialization(O: object): string {
-  return JSON.stringify(O);
-}
-export function PostDateDeserialization(deserial: object): PostDate {
-  if (!deserial) return new PostDate();
+export const deserializePostDate = (target: object): PostDate => {
+  if (!target) null;
 
-  const result = new PostDate();
-  if (deserial['from']) result.from = deserial['from'];
-  if (deserial['to']) result.to = deserial['to'];
-
-  return result;
-}
+  return new PostDate(target['from'], target['to']);
+};

@@ -1,4 +1,10 @@
 export class Location {
+  private longitude: number;
+  private latitude: number;
+  private countryName: string;
+  private cityName: string;
+  private placeName: string;
+
   constructor(
     longitude?: number,
     latitude?: number,
@@ -13,25 +19,28 @@ export class Location {
     if (cityName) this.cityName = cityName;
   }
 
-  longitude: number = null;
-  latitude: number = null;
-  countryName: string = null;
-  cityName: string = null;
-  placeName: string = null;
+  serialize(): string {
+    const obj = {
+      longitude: this.longitude,
+      latitude: this.latitude,
+      countryName: this.countryName,
+      cityName: this.cityName,
+      placeName: this.placeName,
+    };
+    return JSON.stringify(obj);
+  }
+
+  deserialize(target: object): Location {}
 }
 
-export function LocationSerialization(O: Location): string {
-  return JSON.stringify(O);
-}
+export const deserializeLocation = (target: object): Location => {
+  if (!target) null;
 
-export function LocationDeserialization(deserial: object): Location {
-  const result = new Location();
-
-  if (deserial['longitude']) result.longitude = deserial['longitude'];
-  if (deserial['latitude']) result.latitude = deserial['latitude'];
-  if (deserial['countryName']) result.countryName = deserial['countryName'];
-  if (deserial['placeName']) result.placeName = deserial['placeName'];
-  if (deserial['cityName']) result.cityName = deserial['cityName'];
-
-  return result;
-}
+  return new Location(
+    target['longitude'],
+    target['latitude'],
+    target['countryName'],
+    target['placeName'],
+    target['cityName'],
+  );
+};

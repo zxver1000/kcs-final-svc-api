@@ -1,43 +1,56 @@
-import { Location, LocationDeserialization } from './post.location';
+import {
+  deserializeLocation,
+  Location,
+  LocationDeserialization,
+} from './post.location';
 
 export class Outlay {
+  private date: Date;
+  private location: Location;
+  private amount: number;
+  private memo: string;
+  private title: string;
+
   constructor(
-    data?: Date,
+    date?: Date,
     location?: Location,
     amount?: number,
     memo?: string,
     title?: string,
   ) {
-    if (data) this.data = data;
+    if (date) this.date = date;
     if (location) this.location = location;
     if (amount) this.amount = amount;
     if (memo) this.memo = memo;
     if (title) this.title = title;
   }
 
-  data: Date = null;
-  location: Location = null;
-  amount: number = null;
-  memo: string = null;
-  title: string = null;
-}
-
-export function OutLaySerialization(O: Outlay): string {
-  return JSON.stringify(O);
-}
-
-export function OutLayDeserialization(deserial: object): Outlay {
-  if (!deserial) return new Outlay();
-
-  const result = new Outlay();
-  if (deserial['data'] != undefined) result.data = deserial['data'];
-  if (deserial['location'] != undefined) {
-    deserial['location'] = LocationDeserialization(deserial['location']);
-    result.location = deserial['location'];
+  serialize(): string {
+    const obj = {
+      date: this.date,
+      location: this.location,
+      amount: this.amount,
+      memo: this.memo,
+      title: this.title,
+    };
+    return JSON.stringify(obj);
   }
-  if (deserial['amount'] != undefined) result.location = deserial['amount'];
-  if (deserial['memo'] != undefined) result.memo = deserial['memo'];
-  if (deserial['title'] != undefined) result.title = deserial['title'];
-
-  return result;
 }
+
+export const deserializeOutlay = (target: object): Outlay => {
+  if (!target) null;
+
+  let location = null;
+
+  if (target['location'] && target['location'] instanceof Location) {
+    location = deserializeLocation(target['location']);
+  }
+
+  return new Outlay(
+    target['date'],
+    location,
+    target['amount'],
+    target['memo'],
+    target['title'],
+  );
+};
