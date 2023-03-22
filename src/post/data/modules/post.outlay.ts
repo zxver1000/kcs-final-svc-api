@@ -1,8 +1,4 @@
-import {
-  deserializeLocation,
-  Location,
-  LocationDeserialization,
-} from './post.location';
+import { deserializeLocation, Location } from './post.location';
 
 export class Outlay {
   private date: Date;

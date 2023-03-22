@@ -29,8 +29,6 @@ export class Location {
     };
     return JSON.stringify(obj);
   }
-
-  deserialize(target: object): Location {}
 }
 
 export const deserializeLocation = (target: object): Location => {
