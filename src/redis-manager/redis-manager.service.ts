@@ -1,7 +1,5 @@
 import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { plainToClass } from 'class-transformer';
-import { LightPostDto, LightPost_ } from 'src/post/data/dto/LightPostDto';
 import { Post } from 'src/post/data/post.schema';
 
 @Injectable()
@@ -20,11 +18,6 @@ export class RedisManagerService {
     await this.cacheManager.set(key, value);
     return 'OK';
   }
-  async setCacheArray(key: string, value: LightPostDto[]): Promise<string> {
-    await this.cacheManager.set(key, value);
-    return 'OK';
-  }
-
   /**
    * Return the object that matches key in Redis
    * @param key Key to identify the object
@@ -32,15 +25,6 @@ export class RedisManagerService {
    * @returns undefined when the item is not exist in Redis
    */
   async getCache(key: string): Promise<Post | null> {
-    try {
-      return await this.cacheManager.get(key);
-    } catch (e) {
-      console.error(e);
-      this.logger.error('Redis can not connect Check Redis [/]');
-      return null;
-    }
-  }
-  async getCacheArray(key: string): Promise<LightPostDto[] | null> {
     try {
       return await this.cacheManager.get(key);
     } catch (e) {

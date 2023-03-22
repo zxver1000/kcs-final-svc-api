@@ -9,15 +9,14 @@ export class Weather {
   }
 
   weather: WeatherInfo = null;
-
   temperature: Temperature = null;
 }
 
-export function WeatherDeserialization(deserial: Object): Weather {
+export function WeatherDeserialization(deserial: object): Weather {
   if (deserial == undefined) return new Weather();
-  let return_val = new Weather();
-  if (deserial['weather']) return_val.weather = deserial['weather'];
-  if (deserial['temperature']) return_val.temperature = deserial['temperature'];
+  const result = new Weather();
+  if (deserial['weather']) result.weather = deserial['weather'];
+  if (deserial['temperature']) result.temperature = deserial['temperature'];
 
-  return return_val;
+  return result;
 }
