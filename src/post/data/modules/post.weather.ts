@@ -1,5 +1,4 @@
-import { Prop } from '@nestjs/mongoose';
-import { Temperature } from '../enum/post.Temperature';
+import { Temperature } from '../enum/post.temperature';
 import { WeatherInfo } from '../enum/post.weatherInfo';
 
 export class Weather {
