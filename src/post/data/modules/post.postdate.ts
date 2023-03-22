@@ -18,7 +18,7 @@ export class PostDate {
 }
 
 export const deserializePostDate = (target: object): PostDate => {
-  if (!target) null;
+  if (!target) return null;
 
   return new PostDate(target['from'], target['to']);
 };

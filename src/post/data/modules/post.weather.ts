@@ -20,7 +20,7 @@ export class Weather {
 }
 
 export const deserializePostWeather = (target: object): Weather => {
-  if (!target) null;
+  if (!target) return null;
 
   return new Weather(target['weather'], target['temperature']);
 };

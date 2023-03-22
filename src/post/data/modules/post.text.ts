@@ -31,7 +31,7 @@ export class PostText {
 }
 
 export const deserializePostText = (target: object): PostText => {
-  if (!target) null;
+  if (!target) return null;
 
   return new PostText(
     target['owner'],

@@ -34,7 +34,7 @@ export class Outlay {
 }
 
 export const deserializeOutlay = (target: object): Outlay => {
-  if (!target) null;
+  if (!target) return null;
 
   let location = null;
 
