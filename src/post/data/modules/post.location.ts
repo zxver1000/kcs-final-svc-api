@@ -34,7 +34,7 @@ export class Location {
 }
 
 export const deserializeLocation = (target: object): Location => {
-  if (!target || target == undefined) return null;
+  if (!target) return null;
 
   return new Location(
     target['longitude'],
