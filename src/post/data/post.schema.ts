@@ -1,28 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
-import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { Document, HydratedDocument, Types } from 'mongoose';
-import { PostDate, PostDateDeserialization } from './info/post.postdate';
-import { Outlay, OutLayDeserialization } from './info/post.outlay';
-import { Weather, WeatherDeserialization } from './info/post.weather';
-
+import { IsNotEmpty, IsString } from 'class-validator';
+import { Document } from 'mongoose';
+import { PostDate } from './modules/post.postdate';
+import { Outlay } from './modules/post.outlay';
+import { Weather } from './modules/post.weather';
+import { Location } from './modules/post.location';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
-import { LightPost_ } from './dto/LightPostDto';
+import { deserializePostText, PostText } from './modules/post.text';
 
 const options: SchemaOptions = {
   //* MongoDB 아래에 생성될 collection 이름 지정
   //* 지정 안하면 class 첫글자 소문자, 제일 마지막에 s 붙임
-  collection: 'post',
+  collection: 'posts',
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   id: true,
 };
-export type PostDocument = HydratedDocument<Post>;
+const DEFAULT_PREVIEW = '/img/logo.png';
 
 @Schema(options)
-export class Post extends Document implements LightPost_ {
+export class Post extends Document {
   @ApiProperty({
-    example: '{yyyy-MM-dd-hh-mm}',
-    description: 'PostDate',
+    example: 'Mongo Object ID',
+    description: 'Mongo Object ID',
     required: true,
   })
   @Prop({
@@ -30,7 +30,38 @@ export class Post extends Document implements LightPost_ {
   })
   @IsString()
   @IsNotEmpty()
-  PostDate: PostDate = null;
+  owner: string;
+
+  @ApiProperty({
+    example: 'The Best Trip Ever in Switzerland',
+    description: 'Diary Title',
+    required: true,
+  })
+  @Prop({
+    require: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @Prop({
+    require: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  location: Location;
+
+  @ApiProperty({
+    example: '',
+    description: '',
+    required: true,
+  })
+  @Prop({
+    require: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  dates: PostDate;
 
   @ApiProperty({
     example: 'Eugene',
@@ -42,43 +73,40 @@ export class Post extends Document implements LightPost_ {
   })
   @IsString()
   @IsNotEmpty()
-  Outlay: Outlay = null;
+  outlay: Outlay;
 
   @Prop({
     required: true,
   })
   @IsString()
-  Weather: Weather = null;
+  weather: Weather;
 
   @Prop({
     required: true,
   })
-  owner: string = null;
-
-  @Prop()
-  file_id: string[] = null;
-  @Prop()
-  file_path: string[] = null;
+  @IsString()
+  log: PostText[];
 
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts
   readonly readOnlyData: {
     id: string;
-    PostDate: PostDate;
-    Outlay: Outlay;
-    Weather: Weather;
-    file_id: string[];
-    file_path: string[];
-  };
-
-  readonly LightPost: {
-    id: string;
-    Outlay: Outlay;
     owner: string;
-    file_id: string[];
+    title: string;
+    dates: PostDate;
+    location: Location;
+    outlay: Outlay;
+    log: PostText[];
   };
 
-  getInstance() {}
+  readonly lightReadOnlyData: {
+    id: string;
+    owner: string;
+    title: string;
+    dates: PostDate;
+    location: Location;
+    preview: string;
+  };
 }
 
 export const _PostSchema = SchemaFactory.createForClass(Post);
@@ -86,60 +114,49 @@ export const _PostSchema = SchemaFactory.createForClass(Post);
 _PostSchema.virtual('readOnlyData').get(function (this: Post) {
   return {
     id: this.id,
-    PostDate: this.PostDate,
-    Outlay: this.Outlay,
-    Weather: this.Weather,
-    file_id: this.file_id,
-    file_path: this.file_path,
+    owner: this.owner,
+    title: this.title,
+    dates: this.dates,
+    location: this.location,
+    outlay: this.outlay,
+    log: this.log,
   };
 });
-_PostSchema.virtual('LightPost').get(function (this: Post) {
-  if (this.Outlay != undefined && this.file_id.length != 0)
-    return {
-      id: this.id,
-      memo: this.Outlay.memo,
-      title: this.Outlay.title,
-      owner: this.owner,
-      file_id: this.file_id,
-    };
-  else if (this.Outlay != undefined) {
-    return {
-      id: this.id,
-      memo: this.Outlay.memo,
-      title: this.Outlay.title,
-      owner: this.owner,
-    };
-  }
+
+_PostSchema.virtual('lightReadOnlyData').get(function (this: Post) {
+  const preview = deserializePostText(this.log[0]);
 
   return {
     id: this.id,
     owner: this.owner,
+    title: this.title,
+    dates: this.dates,
+    location: this.location,
+    preview: preview ? preview.getPreview() : DEFAULT_PREVIEW,
   };
 });
 
 _PostSchema.set('toObject', { virtuals: true });
 _PostSchema.set('toJSON', { virtuals: true });
 _PostSchema.plugin(mongoosePaginate);
+
 export const PostSchema = _PostSchema;
 
-export function PostSchemaSerialization(O: object): string {
-  return JSON.stringify(O);
+export interface PostReadOnly {
+  id: string;
+  owner: string;
+  title: string;
+  dates: PostDate;
+  location: Location;
+  outlay: Outlay;
+  log: PostText[];
 }
 
-export function PostSchemaDeserialization(deserial: Post): Post {
-  if (deserial['PostDate']) {
-    deserial['PostDate'] = PostDateDeserialization(deserial['PostDate']);
-    //return_value.PostDate = deserial['PostDate'];
-  }
-
-  if (deserial['Outlay']) {
-    deserial['Outlay'] = OutLayDeserialization(deserial['Outlay']);
-    // return_value.Outlay = deserial['Outlay'];
-  }
-  if (deserial['Weather']) {
-    deserial['Weather'] = WeatherDeserialization(deserial['Weather']);
-    // return_value.Weather = deserial['Weather'];
-  }
-
-  return deserial;
+export interface PostReadOnlyLight {
+  id: string;
+  owner: string;
+  title: string;
+  dates: PostDate;
+  location: Location;
+  preview: string;
 }

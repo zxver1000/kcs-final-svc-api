@@ -1,89 +1,67 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Document, Model } from 'mongoose';
-import { type } from 'os';
-import { LightPostDto } from './data/dto/LightPostDto';
-import {
-  Location,
-  LocationDeserialization,
-  LocationSerialization,
-} from './data/info/post.location';
-import {
-  Outlay,
-  OutLayDeserialization,
-  OutLaySerialization,
-} from './data/info/post.outlay';
-import { PostDate, PostDateDeserialization } from './data/info/post.postdate';
+import { PostCreateDto } from './data/dto/post.create.dto';
+import { deserializePostText } from './data/modules/post.text';
 import { PostRepository } from './data/post.repository';
-import {
-  PostSchema,
-  Post,
-  PostDocument,
-  PostSchemaSerialization,
-  PostSchemaDeserialization,
-} from './data/post.schema';
-import { Weather, WeatherDeserialization } from './data/info/post.weather';
+import { Post } from './data/post.schema';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly PostRepositroy: PostRepository) {}
+  private logger = new Logger('PostService');
+  constructor(private readonly postRepository: PostRepository) {}
 
-  private logger = new Logger('PostService Logger');
-
-  async modifyPostFromDB(id: string, userid: string, updateData: object) {
-    try {
-      let Post_data = await this.PostRepositroy.getPost(id);
-
-      if (typeof Post_data === 'number') return Post_data;
-
-      if (Post_data.owner != userid) return HttpStatus.UNAUTHORIZED;
-
-      let result = await this.PostRepositroy.modifyPostFromDB(id, updateData);
-
-      if (typeof result === 'number') {
-        return result;
-      }
-      if (!!result) return result.readOnlyData;
-    } catch (e) {
-      this.logger.error(e.stack || e);
-      return HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-  }
-
-  async addPersonalDiary(data: object, userid: string): Promise<number> {
-    try {
-      let Outlay_Deserialization = OutLayDeserialization(data['Outlay']);
-      let Weather_Deserialization = WeatherDeserialization(data['Weather']);
-      let PostDate_Deserialization = PostDateDeserialization(data['PostDate']);
-
-      let result = this.PostRepositroy.addToPostFromDB(
-        Outlay_Deserialization,
-        Weather_Deserialization,
-        PostDate_Deserialization,
-        userid,
-        data['file_id'],
-      );
-      return result;
-    } catch (e) {
-      this.logger.error(e.stack || e);
-      return HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-  }
-  async getPersonalDiary(
-    PostId: string,
+  async modifyPostFromDB(
+    postid: string,
     userid: string,
-  ): Promise<number | Post | object> {
-    if (PostId.length != 24) return HttpStatus.BAD_REQUEST;
-
+    updateData: PostCreateDto,
+  ) {
     try {
-      let result = await this.PostRepositroy.getPost(PostId);
+      const result = await this.postRepository.modifyPostFromDB(
+        userid,
+        postid,
+        updateData,
+      );
+      this.logger.debug('modifyPostFromDB.result', result);
+
+      if (!result) {
+        this.logger.error('modifyPostFromDB:: Internal Server Error Occured');
+        return HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+      if (typeof result === 'number') return result;
+      if (!!result) {
+        if (result.readOnlyData) {
+          return result.readOnlyData;
+        }
+        return result;
+      }
+
+      this.logger.error(
+        'modifyPostFromDB:: Cannot get any result from userRepository.update',
+      );
+      return HttpStatus.NO_CONTENT;
+    } catch (e) {
+      this.logger.error(e.stack || e);
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+  }
+
+  async addPersonalDiary(
+    post: PostCreateDto,
+    userid: string,
+  ): Promise<number | object> {
+    try {
+      post.owner = userid;
+
+      for (let i = 0; i < post.log?.length; i++) {
+        const log = deserializePostText(post.log[i]);
+        log.setOwner(userid);
+        post.log[i] = log;
+      }
+
+      const result = await this.postRepository.addToPostFromDB(post);
+
       if (typeof result === 'number') {
         return result;
       }
-      console.log('------------');
-      console.log(result);
-      console.log('----------------');
-      console.log(result.readOnlyData);
 
       if (!!result) {
         return result.readOnlyData;
@@ -93,14 +71,31 @@ export class PostService {
       return HttpStatus.INTERNAL_SERVER_ERROR;
     }
   }
-  async ListDiary(
-    page_num: number,
+  async getPersonalDiary(
+    postid: string,
     userid: string,
-  ): Promise<number | LightPostDto[]> {
-    if (page_num == null || isNaN(page_num)) return HttpStatus.BAD_REQUEST;
+  ): Promise<number | Post | object> {
+    try {
+      const result = await this.postRepository.getPost(postid, userid);
+      if (typeof result === 'number') {
+        return result;
+      }
+      if (!!result) {
+        return result.readOnlyData;
+      }
+    } catch (e) {
+      this.logger.error(e.stack || e);
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+  }
+  async ListDiary(
+    pageNum: number,
+    userid: string,
+  ): Promise<number | Array<object>> {
+    if (!pageNum || isNaN(pageNum)) return HttpStatus.BAD_REQUEST;
 
     try {
-      let result = this.PostRepositroy.getPosts(page_num, userid);
+      const result = this.postRepository.getPosts(pageNum, userid);
 
       return result;
     } catch (e) {
@@ -109,13 +104,16 @@ export class PostService {
     }
   }
 
-  async deletePersonalDiary(id: string[], userid: string): Promise<number> {
+  async deletePersonalDiary(
+    postIds: string[],
+    userid: string,
+  ): Promise<number> {
     try {
-      for (let i = 0; i < id.length; i++) {
-        let PostData = await this.PostRepositroy.getPost(id[i]);
-        if (typeof PostData != 'number') {
-          let result = await this.PostRepositroy.deletePostFromDB(
-            PostData,
+      for (let i = 0; i < postIds.length; i++) {
+        const post = await this.postRepository.getPost(postIds[i], userid);
+        if (typeof post != 'number') {
+          const result = await this.postRepository.deletePostFromDB(
+            post.id,
             userid,
           );
         }

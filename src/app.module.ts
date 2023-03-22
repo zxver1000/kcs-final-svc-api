@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { PostModule } from './post/post.module';
+import mongoose from 'mongoose';
 
 @Module({
   imports: [
@@ -19,4 +20,8 @@ import { PostModule } from './post/post.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    mongoose.set('debug', true);
+  }
+}

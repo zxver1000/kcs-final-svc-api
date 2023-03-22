@@ -1,139 +1,122 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, PaginateModel } from 'mongoose';
 import { RedisManagerService } from 'src/redis-manager/redis-manager.service';
-import { LightPostDto, LightPost_ } from './dto/LightPostDto';
-import { Outlay, OutLayDeserialization } from './info/post.outlay';
-import { PostDate, PostDateDeserialization } from './info/post.postdate';
-import {
-  Post,
-  PostDocument,
-  PostSchema,
-  PostSchemaDeserialization,
-} from './post.schema';
-import { Weather, WeatherDeserialization } from './info/post.weather';
+import { deserializeOutlay, Outlay } from './modules/post.outlay';
+import { deserializePostDate, PostDate } from './modules/post.postdate';
+import { Post, PostReadOnlyLight, PostSchema } from './post.schema';
+import { deserializePostWeather, Weather } from './modules/post.weather';
+import { Model, PaginateModel } from 'mongoose';
+import { deserializePostText, PostText } from './modules/post.text';
+import { deserializeLocation, Location } from './modules/post.location';
+import { PostCreateDto } from './dto/post.create.dto';
 
 export class PostRepository {
+  private readonly redisPrefixKey = 'post';
+  private logger = new Logger('PostRepository');
+
   constructor(
-    @InjectModel(Post.name) private PostModel: PaginateModel<PostDocument>,
+    @InjectModel(Post.name) private postModel: PaginateModel<Post>,
     private readonly redisService: RedisManagerService,
   ) {}
-  private readonly redisPrefixKey = 'Post';
-  async addToPostFromDB(
-    Outlay: Outlay,
-    Weather: Weather,
-    PostDate: PostDate,
-    owner: string,
-    file_id: string[],
-  ): Promise<number> {
-    const check = await this.PostModel.find({
-      PostDate: PostDate,
-      owner: owner,
-    });
-    //존재하면 409
-    for (let i = 0; i < check.length; i++) {
-      if (
-        check[i].Outlay.memo == Outlay.memo &&
-        check[i].Outlay.title == Outlay.title
-      ) {
+
+  async addToPostFromDB(post: PostCreateDto): Promise<Post | number> {
+    try {
+      const result = await this.postModel.create(post);
+      return result;
+    } catch (e) {
+      this.logger.error(`Error Occured While [addToPostFromDB] ${e.message}`);
+      this.logger.error(e.stack || e);
+      if (e.message.includes('E11000')) {
         return HttpStatus.CONFLICT;
       }
+      return HttpStatus.INTERNAL_SERVER_ERROR;
     }
-    const Post = new this.PostModel(PostSchema);
-    Post.Outlay = Outlay;
-    Post.Weather = Weather;
-    Post.PostDate = PostDate;
-    Post.owner = owner;
-    if (file_id != undefined) Post.file_id = file_id;
-    await Post.save();
-    return HttpStatus.CREATED;
   }
 
   async modifyPostFromDB(
-    id: string,
-    update_Data: object,
+    userid: string,
+    postid: string,
+    post: PostCreateDto,
+    // update_Data: object,
   ): Promise<number | Post> {
-    const key = `${this.redisPrefixKey}/${id}`;
-    let new_Post;
-    let post = await this.PostModel.findById(id);
-    let update = {};
+    try {
+      const target = await this.postModel.findById(postid);
+      if (!target) {
+        return HttpStatus.NO_CONTENT;
+      }
 
-    if (update_Data == undefined) return HttpStatus.NO_CONTENT;
+      if (target.owner !== userid) return HttpStatus.UNAUTHORIZED;
 
-    if (update_Data['Outlay'] != undefined) {
-      post.Outlay = OutLayDeserialization(update_Data['Outlay']);
-    }
-    if (update_Data['PostDate'] != undefined) {
-      post.PostDate = PostDateDeserialization(update_Data['PostDate']);
-    }
-    if (update_Data['Weather'] != undefined) {
-      post.Weather = WeatherDeserialization(update_Data['Weather']);
-    }
-    if (update_Data['file_id'] != undefined) {
-      post.file_id = update_Data['file_id'];
-    }
-    if (update_Data['file_path'] != undefined) {
-      post.file_path = update_Data['file_path'];
-    }
+      if (post.dates) target.dates = post.dates;
+      if (post.location) target.location = post.location;
+      if (post.log) target.log = post.log;
+      if (post.outlay) target.outlay = post.outlay;
+      if (post.title) target.title = post.title;
+      if (post.weather) target.weather = post.weather;
 
-    const redisResult = await this.redisService.setCache(key, post);
-    await post.save();
+      const newPost = await target.save();
 
-    return post;
+      this.logger.debug('newPost:', newPost);
+
+      const iKey = `${this.redisPrefixKey}/${newPost.id}`;
+      await this.redisService.deleteCache(iKey);
+
+      return newPost.readOnlyData as Post;
+    } catch (e) {
+      this.logger.error(`Error Occured While [modifyPostFromDB] ${e.message}`);
+      this.logger.error(e.stack || e);
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
   }
-  async deletePostFromDB(Post: Post, userid: string): Promise<number> {
-    const key = `${this.redisPrefixKey}/${Post.id}`;
-
-    const Post_data = await this.PostModel.findOne({ _id: Post.id });
-    if (userid == Post_data.owner) {
-      Post_data.delete();
-      const redisResult = await this.redisService.deleteCache(key);
+  async deletePostFromDB(postid: string, userid: string): Promise<number> {
+    const post = await this.postModel.findById(postid);
+    if (userid !== post.owner) {
+      return HttpStatus.UNAUTHORIZED;
     }
+
+    const key = `${this.redisPrefixKey}/${postid}`;
+
+    await post.delete();
+    await this.redisService.deleteCache(key);
 
     return HttpStatus.OK;
   }
 
-  async getPosts(
-    page_num: number,
-    userid: string,
-  ): Promise<LightPostDto[] | number> {
-    //10개단위
-    const Post_Datas = await this.PostModel.paginate(
-      {},
+  async getPosts(page_num: number, userid: string): Promise<Post[] | number> {
+    const posts = await this.postModel.paginate(
+      { owner: userid },
       {
         sort: { createdAt: -1 }, // 최신 순 정렬
         limit: 10, // 개수 제한
         page: page_num, // 페이지 번호
       },
     );
-    if (Post_Datas['docs'].length == 0) return HttpStatus.NO_CONTENT;
+    if (posts['docs'].length == 0) return HttpStatus.NO_CONTENT;
 
-    let LightPost_Datas = [];
-    for (let i = 0; i < Post_Datas['docs'].length; i++) {
-      if (Post_Datas['docs'][i].owner != userid) return HttpStatus.UNAUTHORIZED;
+    const lightPosts = [];
+    for (let i = 0; i < posts['docs'].length; i++) {
+      if (posts['docs'][i].owner !== userid) continue;
 
-      LightPost_Datas.push(Post_Datas['docs'][i].LightPost);
+      lightPosts.push(posts['docs'][i].lightReadOnlyData);
     }
-    return LightPost_Datas;
-    //return Post_Datas;
+    return lightPosts;
   }
 
-  async getPost(id: string): Promise<number | Post> {
-    const key = `${this.redisPrefixKey}/${id}`;
+  async getPost(postid: string, userid: string): Promise<Post | number> {
+    const key = `${this.redisPrefixKey}/${postid}`;
     const redisResult = await this.redisService.getCache(key);
 
     if (!!redisResult) {
       return redisResult;
     }
 
-    const Post_data = await this.PostModel.findOne({
-      _id: id,
-    });
-    if (Post_data == null || Post_data == undefined) {
-      return HttpStatus.NO_CONTENT;
-    }
-    await this.redisService.setCache(key, Post_data);
+    const post = await this.postModel.findById(postid);
+    if (!post) return HttpStatus.NO_CONTENT;
 
-    return Post_data;
+    if (post.owner !== userid) return HttpStatus.UNAUTHORIZED;
+
+    await this.redisService.setCache(key, post);
+
+    return post.readOnlyData as Post;
   }
 }
