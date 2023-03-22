@@ -1,10 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { RedisManagerService } from 'src/redis-manager/redis-manager.service';
-import { Outlay } from './info/post.outlay';
-import { PostDate } from './info/post.postdate';
+import { Outlay } from './modules/post.outlay';
+import { PostDate } from './modules/post.postdate';
 import { Post, PostReadOnlyLight } from './post.schema';
-import { Weather } from './info/post.weather';
+import { Weather } from './modules/post.weather';
 import { Model, PaginateModel } from 'mongoose';
 
 export class PostRepository {

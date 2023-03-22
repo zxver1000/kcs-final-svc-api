@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
 import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
 import { Document, Types } from 'mongoose';
-import { PostDate } from './info/post.postdate';
-import { Outlay } from './info/post.outlay';
-import { Weather } from './info/post.weather';
-import { Location } from './info/post.location';
+import { PostDate } from './modules/post.postdate';
+import { Outlay } from './modules/post.outlay';
+import { Weather } from './modules/post.weather';
+import { Location } from './modules/post.location';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 const options: SchemaOptions = {

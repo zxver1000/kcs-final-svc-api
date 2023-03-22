@@ -1,11 +1,10 @@
-import { Prop } from '@nestjs/mongoose';
 import { Location, LocationDeserialization } from './post.location';
 
 export class Outlay {
   constructor(
     data?: Date,
     location?: Location,
-    amount?: Number,
+    amount?: number,
     memo?: string,
     title?: string,
   ) {
@@ -17,13 +16,9 @@ export class Outlay {
   }
 
   data: Date = null;
-
   location: Location = null;
-
-  amount: Number = null;
-
+  amount: number = null;
   memo: string = null;
-
   title: string = null;
 }
 
@@ -32,19 +27,17 @@ export function OutLaySerialization(O: Outlay): string {
 }
 
 export function OutLayDeserialization(deserial: object): Outlay {
-  //let deserial = JSON.parse(str);
+  if (!deserial) return new Outlay();
 
-  if (deserial == undefined) return new Outlay();
-  let return_value = new Outlay();
-  if (deserial['data'] != undefined) return_value.data = deserial['data'];
+  const result = new Outlay();
+  if (deserial['data'] != undefined) result.data = deserial['data'];
   if (deserial['location'] != undefined) {
     deserial['location'] = LocationDeserialization(deserial['location']);
-    return_value.location = deserial['location'];
+    result.location = deserial['location'];
   }
-  if (deserial['amount'] != undefined)
-    return_value.location = deserial['amount'];
-  if (deserial['memo'] != undefined) return_value.memo = deserial['memo'];
-  if (deserial['title'] != undefined) return_value.title = deserial['title'];
+  if (deserial['amount'] != undefined) result.location = deserial['amount'];
+  if (deserial['memo'] != undefined) result.memo = deserial['memo'];
+  if (deserial['title'] != undefined) result.title = deserial['title'];
 
-  return return_value;
+  return result;
 }
