@@ -73,7 +73,7 @@ export class Post extends Document {
   })
   @IsString()
   @IsNotEmpty()
-  outlay: Outlay;
+  outlay: Outlay[];
 
   @Prop({
     required: true,
@@ -87,6 +87,13 @@ export class Post extends Document {
   @IsString()
   log: PostText[];
 
+  @Prop({
+    required: true,
+    default: '/img/logo.png',
+  })
+  @IsString()
+  preview: string;
+
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts
   readonly readOnlyData: {
@@ -95,8 +102,9 @@ export class Post extends Document {
     title: string;
     dates: PostDate;
     location: Location;
-    outlay: Outlay;
+    outlay: Outlay[];
     log: PostText[];
+    preview: string;
   };
 
   readonly lightReadOnlyData: {
@@ -115,6 +123,7 @@ _PostSchema.virtual('readOnlyData').get(function (this: Post) {
   return {
     id: this.id,
     owner: this.owner,
+    preview: this.preview,
     title: this.title,
     dates: this.dates,
     location: this.location,
@@ -129,10 +138,10 @@ _PostSchema.virtual('lightReadOnlyData').get(function (this: Post) {
   return {
     id: this.id,
     owner: this.owner,
+    preview: this.preview,
     title: this.title,
     dates: this.dates,
     location: this.location,
-    preview: preview ? preview.getPreview() : DEFAULT_PREVIEW,
   };
 });
 
@@ -145,18 +154,19 @@ export const PostSchema = _PostSchema;
 export interface PostReadOnly {
   id: string;
   owner: string;
+  preview: string;
   title: string;
   dates: PostDate;
   location: Location;
-  outlay: Outlay;
+  outlay: Outlay[];
   log: PostText[];
 }
 
 export interface PostReadOnlyLight {
   id: string;
   owner: string;
+  preview: string;
   title: string;
   dates: PostDate;
   location: Location;
-  preview: string;
 }

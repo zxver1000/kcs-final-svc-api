@@ -1,13 +1,8 @@
 import { HttpStatus, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { RedisManagerService } from 'src/redis-manager/redis-manager.service';
-import { deserializeOutlay, Outlay } from './modules/post.outlay';
-import { deserializePostDate, PostDate } from './modules/post.postdate';
-import { Post, PostReadOnlyLight, PostSchema } from './post.schema';
-import { deserializePostWeather, Weather } from './modules/post.weather';
-import { Model, PaginateModel } from 'mongoose';
-import { deserializePostText, PostText } from './modules/post.text';
-import { deserializeLocation, Location } from './modules/post.location';
+import { Post } from './post.schema';
+import { PaginateModel } from 'mongoose';
 import { PostCreateDto } from './dto/post.create.dto';
 
 export class PostRepository {
@@ -19,7 +14,7 @@ export class PostRepository {
     private readonly redisService: RedisManagerService,
   ) {}
 
-  async addToPostFromDB(post: PostCreateDto): Promise<Post | number> {
+  async createPost(post: PostCreateDto): Promise<Post | number> {
     try {
       const result = await this.postModel.create(post);
       return result;
@@ -105,18 +100,25 @@ export class PostRepository {
   async getPost(postid: string, userid: string): Promise<Post | number> {
     const key = `${this.redisPrefixKey}/${postid}`;
     const redisResult = await this.redisService.getCache(key);
+    this.logger.log('getPost.redisResult:', !!redisResult);
+    this.logger.debug(redisResult);
 
     if (!!redisResult) {
       return redisResult;
     }
 
-    const post = await this.postModel.findById(postid);
-    if (!post) return HttpStatus.NO_CONTENT;
+    const dbResult = await this.postModel.findById(postid);
 
-    if (post.owner !== userid) return HttpStatus.UNAUTHORIZED;
+    this.logger.log(`findById.dbResult: ${!!dbResult}`);
+    this.logger.debug(dbResult);
 
-    await this.redisService.setCache(key, post);
+    if (dbResult.owner !== userid) return HttpStatus.NO_CONTENT;
 
-    return post.readOnlyData as Post;
+    if (!!dbResult) {
+      await this.redisService.setCache(key, dbResult);
+      return dbResult;
+    }
+
+    return HttpStatus.NO_CONTENT;
   }
 }

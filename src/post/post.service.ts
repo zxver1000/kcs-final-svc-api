@@ -57,7 +57,7 @@ export class PostService {
         post.log[i] = log;
       }
 
-      const result = await this.postRepository.addToPostFromDB(post);
+      const result = await this.postRepository.createPost(post);
 
       if (typeof result === 'number') {
         return result;

@@ -53,7 +53,7 @@ export function SuccessInterceptor(
 
       this.logger.debug('postResult:', postResult);
 
-      if (!postResult.length) {
+      if (postResult && !postResult.length) {
         postResult = [postResult];
       }
 

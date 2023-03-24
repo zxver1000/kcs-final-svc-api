@@ -1,22 +1,12 @@
-import { deserializeLocation, Location } from './post.location';
-
-export class Outlay {
-  private date: Date;
-  private location: Location;
-  private amount: number;
+export class SingleOutlay {
+  private date: string;
+  private cost: number;
   private memo: string;
   private title: string;
 
-  constructor(
-    date?: Date,
-    location?: Location,
-    amount?: number,
-    memo?: string,
-    title?: string,
-  ) {
+  constructor(date?: string, cost?: number, memo?: string, title?: string) {
     if (date) this.date = date;
-    if (location) this.location = location;
-    if (amount) this.amount = amount;
+    if (cost) this.cost = cost;
     if (memo) this.memo = memo;
     if (title) this.title = title;
   }
@@ -24,10 +14,41 @@ export class Outlay {
   serialize(): string {
     const obj = {
       date: this.date,
-      location: this.location,
-      amount: this.amount,
+      cost: this.cost,
       memo: this.memo,
       title: this.title,
+    };
+    return JSON.stringify(obj);
+  }
+}
+
+export const deserializeSingleOutlay = (target: object): SingleOutlay => {
+  if (!target) return null;
+
+  return new SingleOutlay(
+    target['date'],
+    target['cost'],
+    target['memo'],
+    target['title'],
+  );
+};
+
+export class Outlay {
+  private cost: number;
+  private title: string;
+  private outlays: SingleOutlay[];
+
+  constructor(title?: string, cost?: number, outlays?: SingleOutlay[]) {
+    if (title) this.title = title;
+    if (cost) this.cost = cost;
+    if (outlays) this.outlays = outlays;
+  }
+
+  serialize(): string {
+    const obj = {
+      title: this.title,
+      cost: this.cost,
+      outlays: this.outlays,
     };
     return JSON.stringify(obj);
   }
@@ -36,17 +57,16 @@ export class Outlay {
 export const deserializeOutlay = (target: object): Outlay => {
   if (!target) return null;
 
-  let location = null;
+  const outlays = [];
 
-  if (target['location'] && target['location'] instanceof Location) {
-    location = deserializeLocation(target['location']);
+  if (target['outlays']) {
+    try {
+      for (let i = 0; i < target['outlays'].length; i++) {
+        const outlay = deserializeSingleOutlay(target['outlays'][i]);
+        outlays.push(outlay);
+      }
+    } catch (ignore) {}
   }
 
-  return new Outlay(
-    target['date'],
-    location,
-    target['amount'],
-    target['memo'],
-    target['title'],
-  );
+  return new Outlay(target['title'], target['cost'], outlays);
 };
