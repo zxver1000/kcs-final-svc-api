@@ -36,19 +36,19 @@ export const deserializeSingleOutlay = (target: object): SingleOutlay => {
 export class Outlay {
   private cost: number;
   private title: string;
-  private outlays: SingleOutlay[];
+  private children: SingleOutlay[];
 
   constructor(title?: string, cost?: number, outlays?: SingleOutlay[]) {
     if (title) this.title = title;
     if (cost) this.cost = cost;
-    if (outlays) this.outlays = outlays;
+    if (outlays) this.children = outlays;
   }
 
   serialize(): string {
     const obj = {
       title: this.title,
       cost: this.cost,
-      outlays: this.outlays,
+      children: this.children,
     };
     return JSON.stringify(obj);
   }
@@ -57,16 +57,16 @@ export class Outlay {
 export const deserializeOutlay = (target: object): Outlay => {
   if (!target) return null;
 
-  const outlays = [];
+  const children = [];
 
   if (target['outlays']) {
     try {
-      for (let i = 0; i < target['outlays'].length; i++) {
-        const outlay = deserializeSingleOutlay(target['outlays'][i]);
-        outlays.push(outlay);
+      for (let i = 0; i < target['children'].length; i++) {
+        const outlay = deserializeSingleOutlay(target['children'][i]);
+        children.push(outlay);
       }
     } catch (ignore) {}
   }
 
-  return new Outlay(target['title'], target['cost'], outlays);
+  return new Outlay(target['title'], target['cost'], children);
 };
