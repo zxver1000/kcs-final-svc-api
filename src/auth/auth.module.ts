@@ -13,7 +13,7 @@ import { JwtStrategy } from './jwt/jwt.strategy';
     PassportModule.register({ defaultStrategry: 'jwt', session: true }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '1y' },
     }),
     forwardRef(() => UserModule),
   ],
