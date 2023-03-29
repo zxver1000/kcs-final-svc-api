@@ -12,3 +12,10 @@ export interface UserPasswordDto {
   currentPassword: string;
   newPassword: string;
 }
+
+export interface ResetPasswordDto {
+  message: string;
+  email: string;
+  id: string;
+  newPassword: string;
+}

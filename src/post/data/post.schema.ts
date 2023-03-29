@@ -7,6 +7,7 @@ import { PostDate } from './modules/post.postdate';
 import { Outlay } from './modules/post.outlay';
 import { Weather } from './modules/post.weather';
 import { PostText } from './modules/post.text';
+import { defaultPreview, PostPreview } from './modules/post.preview';
 
 const options: SchemaOptions = {
   //* MongoDB 아래에 생성될 collection 이름 지정
@@ -88,10 +89,10 @@ export class Post extends Document {
 
   @Prop({
     required: true,
-    default: '/img/logo.png',
+    default: defaultPreview,
   })
   @IsString()
-  preview: string;
+  preview: PostPreview;
 
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts

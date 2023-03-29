@@ -15,9 +15,14 @@ import {
   Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserCreateDto, UserPasswordDto } from './data/dto/user-create.dto';
+import {
+  ResetPasswordDto,
+  UserCreateDto,
+  UserPasswordDto,
+} from './data/dto/user-create.dto';
 import { CurrentUser } from '../common/decorator/user.decorator';
 import { UserReadOnly } from './data/user.schema';
+import { decryptAES } from 'src/common/utils/encrypt';
 
 @Controller('user')
 export class UserController {
@@ -36,6 +41,8 @@ export class UserController {
 
   @Post('find')
   async findUser(@Body('email') email: string) {
+    console.log('Find Request Arrived: ', email);
+    // return 'OK';
     return await this.userService.findUser(email);
   }
 
@@ -75,8 +82,18 @@ export class UserController {
   @Patch('secret')
   @UseGuards(JwtAuthGuard)
   async updatePassword(@Body() data, @CurrentUser() user) {
-    this.logger.debug('updatePassword.data: ', data, 'user:', user);
     return await this.userService.updateUserPassword(data.user, user.id);
+  }
+
+  @Patch('reset-password')
+  async resetPassword(@Body('user') user: ResetPasswordDto) {
+    this.logger.debug('resetPassword.data: ', user);
+    const decryptedMessage = await decryptAES(user.message);
+    const userJson = JSON.parse(decryptedMessage);
+    if (!userJson.expireAt || userJson.expireAt < Date.now()) {
+      return { success: false, code: 410 };
+    }
+    return await this.userService.resetUserPassword(user);
   }
 
   @Delete()

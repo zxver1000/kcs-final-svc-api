@@ -9,7 +9,11 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom, timeout } from 'rxjs';
-import { UserCreateDto, UserPasswordDto } from './data/dto/user-create.dto';
+import {
+  ResetPasswordDto,
+  UserCreateDto,
+  UserPasswordDto,
+} from './data/dto/user-create.dto';
 import { UserReadOnly } from './data/user.schema';
 
 @Injectable()
@@ -240,6 +244,35 @@ export class UserService {
           {
             user,
             userid,
+          },
+        )
+        .pipe(timeout(this.gatewayTimeout)),
+    );
+
+    if (!result) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!result.success) {
+      if (result.code >= 400) {
+        throw new HttpException(HttpStatus[result.code], result.code);
+      }
+    }
+
+    return result;
+  }
+
+  async resetUserPassword(
+    user: ResetPasswordDto,
+  ): Promise<UserMicroserviceDataWrapper> {
+    const result = await lastValueFrom(
+      this.userClient
+        .send(
+          {
+            cmd: 'reset_password',
+          },
+          {
+            user,
           },
         )
         .pipe(timeout(this.gatewayTimeout)),

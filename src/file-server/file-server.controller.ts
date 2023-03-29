@@ -30,12 +30,8 @@ export class FileServerController {
 
   @ApiOperation({ summary: '글 파일 업로드 - 이미지' })
   @Post('post')
-  @UseInterceptors(FilesInterceptor('files', 10))
-  async uploadFile(
-    @UploadedFiles() files: Array<Express.Multer.File>,
-    @CurrentUser() user: UserReadOnly,
-  ) {
-    return await this.fileService.uploadFile(files, user);
+  async uploadFile(@Body() files, @CurrentUser() user: UserReadOnly) {
+    return await this.fileService.uploadFile(files.files, user);
   }
 
   @ApiOperation({ summary: '유저 프로필 업로드 ' })

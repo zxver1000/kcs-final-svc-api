@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { AuthService } from '../auth/service/auth.service';
 import { CurrentUser } from '../common/decorator/user.decorator';
 import { PostCreateDto } from './data/dto/post.create.dto';
+import { PostUpdateDto } from './data/dto/post.update.dto';
 
 import { PostService } from './post.service';
 
@@ -67,16 +68,14 @@ export class PostController {
 
     return await this.postService.deletePersonalDiary(postId, user.id);
   }
+
   @Patch()
   @UseGuards(JwtAuthGuard)
-  async modifyPersonalDiary(
-    @CurrentUser() user,
-    @Body('postid') postid: string,
-    @Body('data') data: object,
-  ) {
+  async modifyPersonalDiary(@CurrentUser() user, @Body() data) {
     if (!user) {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
-    return await this.postService.modifyPersonalDiary(postid, user.id, data);
+    this.logger.debug('modifyPersonalDiary.data', data);
+    return await this.postService.modifyPersonalDiary(data.id, user.id, data);
   }
 }

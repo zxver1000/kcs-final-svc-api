@@ -4,12 +4,15 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom, timeout } from 'rxjs';
 import { UserMicroserviceDataWrapper } from '../common/data/user.microservice.dto';
+import { PostUpdateDto } from './data/dto/post.update.dto';
 @Injectable()
 export class PostService {
+  private logger = new Logger('PostService');
   private gatewayTimeout: number;
   constructor(
     @Inject('MS-Post')
@@ -20,7 +23,7 @@ export class PostService {
     if (isNaN(this.gatewayTimeout)) this.gatewayTimeout = 5000;
   }
   async modifyPostFromDB(
-    PostId: string,
+    postid: string,
     userid: string,
     updateData: object,
   ): Promise<UserMicroserviceDataWrapper | null> {
@@ -31,7 +34,7 @@ export class PostService {
             cmd: 'modify_post',
           },
           {
-            PostId,
+            postid,
             userid,
             updateData,
           },
@@ -81,7 +84,7 @@ export class PostService {
   }
 
   async getPersonalDiary(
-    PostId: string,
+    postid: string,
     userid: string,
   ): Promise<UserMicroserviceDataWrapper | number> {
     const result = await lastValueFrom(
@@ -91,7 +94,7 @@ export class PostService {
             cmd: 'get_post',
           },
           {
-            PostId,
+            postid,
             userid,
           },
         )
@@ -133,7 +136,7 @@ export class PostService {
     }
     return result;
   }
-  async deletePersonalDiary(postId: string[], userid: string) {
+  async deletePersonalDiary(postid: string[], userid: string) {
     const result = await lastValueFrom(
       this.userClient
         .send(
@@ -141,7 +144,7 @@ export class PostService {
             cmd: 'delete_post',
           },
           {
-            postId,
+            postid,
             userid,
           },
         )
@@ -161,8 +164,9 @@ export class PostService {
   async modifyPersonalDiary(
     postid: string,
     userid: string,
-    updateData: object,
+    updateData: PostUpdateDto,
   ) {
+    this.logger.debug('updateData:', updateData);
     const result = await lastValueFrom(
       this.userClient
         .send(
