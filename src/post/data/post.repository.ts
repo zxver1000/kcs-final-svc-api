@@ -1,9 +1,10 @@
 import { HttpStatus, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { RedisManagerService } from 'src/redis-manager/redis-manager.service';
+import { RedisManagerService } from '../../redis-manager/redis-manager.service';
 import { Post } from './post.schema';
 import { PaginateModel } from 'mongoose';
 import { PostCreateDto } from './dto/post.create.dto';
+import { PostUpdateDto } from './dto/post.update.dto';
 
 export class PostRepository {
   private readonly redisPrefixKey = 'post';
@@ -31,10 +32,11 @@ export class PostRepository {
   async modifyPostFromDB(
     userid: string,
     postid: string,
-    post: PostCreateDto,
+    post: PostUpdateDto,
     // update_Data: object,
   ): Promise<number | Post> {
     try {
+      this.logger.debug('modifyPostFromDB.post', post);
       const target = await this.postModel.findById(postid);
       if (!target) {
         return HttpStatus.NO_CONTENT;
@@ -42,6 +44,7 @@ export class PostRepository {
 
       if (target.owner !== userid) return HttpStatus.UNAUTHORIZED;
 
+      if (post.preview) target.preview = post.preview;
       if (post.dates) target.dates = post.dates;
       if (post.location) target.location = post.location;
       if (post.log) target.log = post.log;
@@ -107,6 +110,7 @@ export class PostRepository {
       return redisResult;
     }
 
+    this.logger.debug(postid);
     const dbResult = await this.postModel.findById(postid);
 
     this.logger.log(`findById.dbResult: ${!!dbResult}`);

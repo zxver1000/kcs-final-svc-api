@@ -8,6 +8,7 @@ import { Weather } from './modules/post.weather';
 import { Location } from './modules/post.location';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 import { deserializePostText, PostText } from './modules/post.text';
+import { defaultPreview, PostPreview } from './modules/post.preview';
 
 const options: SchemaOptions = {
   //* MongoDB 아래에 생성될 collection 이름 지정
@@ -89,10 +90,10 @@ export class Post extends Document {
 
   @Prop({
     required: true,
-    default: '/img/logo.png',
+    default: defaultPreview,
   })
   @IsString()
-  preview: string;
+  preview: PostPreview;
 
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts
@@ -104,7 +105,7 @@ export class Post extends Document {
     location: Location;
     outlay: Outlay[];
     log: PostText[];
-    preview: string;
+    preview: PostPreview;
   };
 
   readonly lightReadOnlyData: {
@@ -113,7 +114,7 @@ export class Post extends Document {
     title: string;
     dates: PostDate;
     location: Location;
-    preview: string;
+    preview: PostPreview;
   };
 }
 
@@ -154,7 +155,7 @@ export const PostSchema = _PostSchema;
 export interface PostReadOnly {
   id: string;
   owner: string;
-  preview: string;
+  preview: PostPreview;
   title: string;
   dates: PostDate;
   location: Location;
@@ -165,7 +166,7 @@ export interface PostReadOnly {
 export interface PostReadOnlyLight {
   id: string;
   owner: string;
-  preview: string;
+  preview: PostPreview;
   title: string;
   dates: PostDate;
   location: Location;

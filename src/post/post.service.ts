@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { PostCreateDto } from './data/dto/post.create.dto';
+import { PostUpdateDto } from './data/dto/post.update.dto';
 import { deserializePostText } from './data/modules/post.text';
 import { PostRepository } from './data/post.repository';
 import { Post } from './data/post.schema';
@@ -12,9 +13,10 @@ export class PostService {
   async modifyPostFromDB(
     postid: string,
     userid: string,
-    updateData: PostCreateDto,
+    updateData: PostUpdateDto,
   ) {
     try {
+      this.logger.debug('modifyPostFromDB.updateData', updateData);
       const result = await this.postRepository.modifyPostFromDB(
         userid,
         postid,

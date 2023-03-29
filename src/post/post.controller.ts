@@ -8,21 +8,22 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { MicroserviceDataLogger } from 'src/common/interceptor/logger/logger.interceptor';
 import { SuccessInterceptor } from 'src/common/interceptor/successinterceptor/successinterceptor.interceptor';
 import { PostCreateDto } from './data/dto/post.create.dto';
+import { PostUpdateDto } from './data/dto/post.update.dto';
 import { PostService } from './post.service';
 
 @Controller('post')
 @UseInterceptors(MicroserviceDataLogger('UserController'))
 export class PostController {
   private logger = new Logger('PostController');
-  constructor(private readonly PostService: PostService) {}
+  constructor(private readonly postService: PostService) {}
 
   @UseInterceptors(SuccessInterceptor(HttpStatus.OK))
   @MessagePattern({ cmd: 'get_post' })
   async getPersonalDiary(
-    @Payload('PostId') PostId: string,
+    @Payload('postid') postid: string,
     @Payload('userid') userid: string,
   ) {
-    const result = await this.PostService.getPersonalDiary(PostId, userid);
+    const result = await this.postService.getPersonalDiary(postid, userid);
 
     return result;
   }
@@ -34,7 +35,7 @@ export class PostController {
     @Payload('userid') userid: string,
   ) {
     if (!pageNum) pageNum = 1;
-    return await this.PostService.ListDiary(pageNum, userid);
+    return await this.postService.ListDiary(pageNum, userid);
   }
 
   @UseInterceptors(SuccessInterceptor(HttpStatus.CREATED))
@@ -43,17 +44,17 @@ export class PostController {
     @Payload('data') data: PostCreateDto,
     @Payload('userid') userid: string,
   ) {
-    const result = await this.PostService.addPersonalDiary(data, userid);
+    const result = await this.postService.addPersonalDiary(data, userid);
     return result;
   }
 
   @UseInterceptors(SuccessInterceptor(HttpStatus.OK))
   @MessagePattern({ cmd: 'delete_post' })
   async deletePersonalDiary(
-    @Payload('postId') postId: string[],
+    @Payload('postid') postid: string[],
     @Payload('userid') userid: string,
   ) {
-    const result = await this.PostService.deletePersonalDiary(postId, userid);
+    const result = await this.postService.deletePersonalDiary(postid, userid);
 
     return result;
   }
@@ -61,12 +62,13 @@ export class PostController {
   @UseInterceptors(SuccessInterceptor(HttpStatus.OK))
   @MessagePattern({ cmd: 'modify_post' })
   async modifyPersonalDiary(
-    @Payload('postid') postId: string,
+    @Payload('postid') postid: string,
     @Payload('userid') userid: string,
-    @Payload('updateData') updateData: PostCreateDto,
+    @Payload('updateData') updateData: PostUpdateDto,
   ) {
-    const result = await this.PostService.modifyPostFromDB(
-      postId,
+    this.logger.debug('updateData', updateData);
+    const result = await this.postService.modifyPostFromDB(
+      postid,
       userid,
       updateData,
     );
