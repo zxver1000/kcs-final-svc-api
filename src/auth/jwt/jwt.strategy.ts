@@ -18,9 +18,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: Payload): Promise<UserReadOnly> {
     this.logger.debug('payload', payload);
-    const msDataFromUserServer = await this.userService.getUserById(
-      payload.sub,
-    );
+    const msDataFromUserServer = await this.userService.getUser({
+      id: payload.sub,
+    });
     this.logger.log('userService.getUserById:', msDataFromUserServer);
     if (!msDataFromUserServer) {
       throw new UnauthorizedException('유저 정보를 확인해 주세요.');

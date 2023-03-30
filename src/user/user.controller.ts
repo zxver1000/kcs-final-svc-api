@@ -41,14 +41,7 @@ export class UserController {
 
   @Post('find')
   async findUser(@Body('email') email: string) {
-    console.log('Find Request Arrived: ', email);
-    // return 'OK';
     return await this.userService.findUser(email);
-  }
-
-  @Get('nickname/:nickname')
-  async findNickname(@Param('nickname') nickname: string) {
-    return await this.userService.findNickname(nickname);
   }
 
   @Post()
@@ -72,6 +65,21 @@ export class UserController {
     return await this.userService.getUserById(user.id);
   }
 
+  @Get('id/:id')
+  async getUserById(@Param('id') id: string) {
+    return await this.userService.getUser({ id });
+  }
+
+  @Get('nickname/:nickname')
+  async findNickname(@Param('nickname') nickname: string) {
+    return await this.userService.getUser({ nickname });
+  }
+
+  @Get('email/:email')
+  async getUserByEmail(@Param('email') email: string) {
+    return await this.userService.getUser({ email });
+  }
+
   @Patch()
   @UseGuards(JwtAuthGuard)
   async updateUser(@Body() data) {
@@ -87,7 +95,7 @@ export class UserController {
 
   @Patch('reset-password')
   async resetPassword(@Body('user') user: ResetPasswordDto) {
-    this.logger.debug('resetPassword.data: ', user);
+    this.logger.debug('resetPassword.data: ', user, user.message);
     const decryptedMessage = await decryptAES(user.message);
     const userJson = JSON.parse(decryptedMessage);
     if (!userJson.expireAt || userJson.expireAt < Date.now()) {
