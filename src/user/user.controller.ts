@@ -72,7 +72,9 @@ export class UserController {
 
   @Get('nickname/:nickname')
   async findNickname(@Param('nickname') nickname: string) {
-    return await this.userService.getUser({ nickname });
+    const result = await this.userService.getUser({ nickname });
+    this.logger.debug('find nickname result:', result);
+    return result;
   }
 
   @Get('email/:email')

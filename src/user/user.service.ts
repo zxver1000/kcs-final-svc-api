@@ -80,6 +80,13 @@ export class UserService {
       }
     }
 
+    if (body.nickname) {
+      return {
+        success: result.success,
+        code: result.code,
+      };
+    }
+
     return result;
   }
 
@@ -353,6 +360,9 @@ export class UserService {
       }
     }
 
-    return result;
+    return {
+      success: result.success,
+      code: result.code,
+    };
   }
 }
