@@ -29,20 +29,14 @@ export class PostController {
 
   @Get(':postid')
   @UseGuards(JwtAuthGuard)
-  async getPost(
-    @Param('postid') postid: string,
-    @Query('uuid') userid: string,
-  ) {
-    return this.postService.getPersonalDiary(postid, userid);
+  async getPost(@Param('postid') postid: string, @CurrentUser() user) {
+    return this.postService.getPersonalDiary(postid, user.id);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getPosts(
-    @Query('pagenum') pagenum: number,
-    @Query('uuid') userid: string,
-  ) {
-    return await this.postService.listDiaries(pagenum, userid);
+  async getPosts(@CurrentUser() user, @Query('pagenum') pagenum: number) {
+    return await this.postService.listDiaries(pagenum, user.id);
   }
 
   @Post()
