@@ -7,6 +7,9 @@ import {
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { MicroserviceDataLogger } from 'src/common/interceptor/logger/logger.interceptor';
 import { SuccessInterceptor } from 'src/common/interceptor/successinterceptor/successinterceptor.interceptor';
+import { PostGroupCreateDto } from 'src/post-group/data/dto/post-group.create.dto';
+import { PostGroupUpdateDto } from 'src/post-group/data/dto/post-group.update.dto';
+import { PostGroupService } from 'src/post-group/post-group.service';
 import { PostCreateDto } from './data/dto/post.create.dto';
 import { PostUpdateDto } from './data/dto/post.update.dto';
 import { PostService } from './post.service';
@@ -54,6 +57,8 @@ export class PostController {
     @Payload('postid') postid: string[],
     @Payload('userid') userid: string,
   ) {
+    this.logger.debug('delete post Postid ', postid);
+    console.log(postid);
     const result = await this.postService.deletePersonalDiary(postid, userid);
 
     return result;

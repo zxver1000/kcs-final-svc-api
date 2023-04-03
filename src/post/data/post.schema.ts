@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, StringExpressionOperatorReturningBoolean } from 'mongoose';
 import { PostDate } from './modules/post.postdate';
 import { Outlay } from './modules/post.outlay';
 import { Weather } from './modules/post.weather';
@@ -17,7 +17,6 @@ const options: SchemaOptions = {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   id: true,
 };
-const DEFAULT_PREVIEW = '/img/logo.png';
 
 @Schema(options)
 export class Post extends Document {
@@ -95,6 +94,9 @@ export class Post extends Document {
   @IsString()
   preview: PostPreview;
 
+  @Prop()
+  groupId: string;
+
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts
   readonly readOnlyData: {
@@ -106,6 +108,7 @@ export class Post extends Document {
     outlay: Outlay[];
     log: PostText[];
     preview: PostPreview;
+    groupId: string;
   };
 
   readonly lightReadOnlyData: {
@@ -115,6 +118,7 @@ export class Post extends Document {
     dates: PostDate;
     location: Location;
     preview: PostPreview;
+    groupId: string;
   };
 }
 
@@ -130,6 +134,7 @@ _PostSchema.virtual('readOnlyData').get(function (this: Post) {
     location: this.location,
     outlay: this.outlay,
     log: this.log,
+    groupId: this.groupId,
   };
 });
 
@@ -143,6 +148,7 @@ _PostSchema.virtual('lightReadOnlyData').get(function (this: Post) {
     title: this.title,
     dates: this.dates,
     location: this.location,
+    groupId: this.groupId,
   };
 });
 

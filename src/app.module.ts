@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { PostModule } from './post/post.module';
+import { PostGroupModule } from './post-group/post-group.module';
 import mongoose from 'mongoose';
 
 @Module({
@@ -16,6 +17,7 @@ import mongoose from 'mongoose';
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }),
+    PostGroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],

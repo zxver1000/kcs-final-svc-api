@@ -3,7 +3,6 @@ import { Post } from '../post.schema';
 
 export class PostUpdateDto extends PickType(Post, [
   'id',
-  'owner',
   'preview',
   'title',
   'location',
@@ -11,4 +10,5 @@ export class PostUpdateDto extends PickType(Post, [
   'outlay',
   'weather',
   'log',
+  'groupId',
 ] as const) {}

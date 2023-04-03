@@ -14,7 +14,7 @@ export class PostService {
     postid: string,
     userid: string,
     updateData: PostUpdateDto,
-  ) {
+  ): Promise<number | Post> {
     try {
       this.logger.debug('modifyPostFromDB.updateData', updateData);
       const result = await this.postRepository.modifyPostFromDB(
@@ -31,13 +31,13 @@ export class PostService {
       if (typeof result === 'number') return result;
       if (!!result) {
         if (result.readOnlyData) {
-          return result.readOnlyData;
+          return result.readOnlyData as Post;
         }
         return result;
       }
 
       this.logger.error(
-        'modifyPostFromDB:: Cannot get any result from userRepository.update',
+        'modifyPostFromDB:: Cannot get any result from PostRepository.update',
       );
       return HttpStatus.NO_CONTENT;
     } catch (e) {
@@ -49,7 +49,7 @@ export class PostService {
   async addPersonalDiary(
     post: PostCreateDto,
     userid: string,
-  ): Promise<number | object> {
+  ): Promise<number | Post> {
     try {
       post.owner = userid;
 
@@ -66,7 +66,7 @@ export class PostService {
       }
 
       if (!!result) {
-        return result.readOnlyData;
+        return result.readOnlyData as Post;
       }
     } catch (e) {
       this.logger.error(e.stack || e);
@@ -76,14 +76,14 @@ export class PostService {
   async getPersonalDiary(
     postid: string,
     userid: string,
-  ): Promise<number | Post | object> {
+  ): Promise<number | Post> {
     try {
       const result = await this.postRepository.getPost(postid, userid);
       if (typeof result === 'number') {
         return result;
       }
       if (!!result) {
-        return result.readOnlyData;
+        return result.readOnlyData as Post;
       }
     } catch (e) {
       this.logger.error(e.stack || e);
@@ -93,7 +93,7 @@ export class PostService {
   async ListDiary(
     pageNum: number,
     userid: string,
-  ): Promise<number | Array<object>> {
+  ): Promise<number | Array<Post>> {
     if (!pageNum || isNaN(pageNum)) return HttpStatus.BAD_REQUEST;
 
     try {

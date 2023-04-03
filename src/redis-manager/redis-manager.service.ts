@@ -1,5 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { PostGroup } from 'src/post-group/data/post-group.schema';
 import { Post } from 'src/post/data/post.schema';
 
 @Injectable()
@@ -24,6 +25,21 @@ export class RedisManagerService {
    * @returns object when the item exist in Redis
    * @returns undefined when the item is not exist in Redis
    */
+
+  async setGroupCache(key: string, value: PostGroup): Promise<string> {
+    await this.cacheManager.set(key, value);
+    return 'OK';
+  }
+  async getGroupCache(key: string): Promise<PostGroup | null> {
+    try {
+      return await this.cacheManager.get(key);
+    } catch (e) {
+      console.error(e);
+      this.logger.error('Redis can not connect Check Redis [/]');
+      return null;
+    }
+  }
+
   async getCache(key: string): Promise<Post | null> {
     try {
       return await this.cacheManager.get(key);

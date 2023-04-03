@@ -5,6 +5,7 @@ import { Post } from './post.schema';
 import { PaginateModel } from 'mongoose';
 import { PostCreateDto } from './dto/post.create.dto';
 import { PostUpdateDto } from './dto/post.update.dto';
+import { PostGroup } from '../../post-group/data/post-group.schema';
 
 export class PostRepository {
   private readonly redisPrefixKey = 'post';
@@ -39,7 +40,7 @@ export class PostRepository {
       this.logger.debug('modifyPostFromDB.post', post);
       const target = await this.postModel.findById(postid);
       if (!target) {
-        return HttpStatus.NO_CONTENT;
+        return HttpStatus.BAD_REQUEST;
       }
 
       if (target.owner !== userid) return HttpStatus.UNAUTHORIZED;
@@ -51,7 +52,7 @@ export class PostRepository {
       if (post.outlay) target.outlay = post.outlay;
       if (post.title) target.title = post.title;
       if (post.weather) target.weather = post.weather;
-
+      if (post.groupId) target.groupId = post.groupId;
       const newPost = await target.save();
 
       this.logger.debug('newPost:', newPost);
@@ -59,6 +60,7 @@ export class PostRepository {
       const iKey = `${this.redisPrefixKey}/${newPost.id}`;
       await this.redisService.deleteCache(iKey);
 
+      newPost.readOnlyData as Post;
       return newPost.readOnlyData as Post;
     } catch (e) {
       this.logger.error(`Error Occured While [modifyPostFromDB] ${e.message}`);
@@ -68,6 +70,9 @@ export class PostRepository {
   }
   async deletePostFromDB(postid: string, userid: string): Promise<number> {
     const post = await this.postModel.findById(postid);
+
+    if (!post) return HttpStatus.NOT_FOUND;
+
     if (userid !== post.owner) {
       return HttpStatus.UNAUTHORIZED;
     }
@@ -115,8 +120,9 @@ export class PostRepository {
 
     this.logger.log(`findById.dbResult: ${!!dbResult}`);
     this.logger.debug(dbResult);
+    if (!dbResult) return HttpStatus.NOT_FOUND;
 
-    if (dbResult.owner !== userid) return HttpStatus.NO_CONTENT;
+    if (dbResult.owner !== userid) return HttpStatus.UNAUTHORIZED;
 
     if (!!dbResult) {
       await this.redisService.setCache(key, dbResult);
