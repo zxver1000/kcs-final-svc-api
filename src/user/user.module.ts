@@ -1,4 +1,4 @@
-import { AuthModule } from './../auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';

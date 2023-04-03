@@ -1,6 +1,6 @@
-import { JwtAuthGuard } from './../auth/jwt/jwt.guard';
-import { AuthService } from './../auth/service/auth.service';
-import { LoginRequestDto } from './../auth/jwt/dto/login.request.dto';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { AuthService } from '../auth/service/auth.service';
+import { LoginRequestDto } from '../auth/jwt/dto/login.request.dto';
 import {
   Body,
   Controller,

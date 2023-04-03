@@ -8,6 +8,9 @@ import { FileServerModule } from './file-server/file-server.module';
 import { LoggerMiddleware } from './common/interceptor/logger/logger.middleware';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
+import { PostGroupController } from './post-group/post-group.controller';
+import { PostGroupService } from './post-group/post-group.service';
+import { PostGroupModule } from './post-group/post-group.module';
 
 @Module({
   imports: [
@@ -17,6 +20,7 @@ import { PostModule } from './post/post.module';
     FileServerModule,
     UserModule,
     PostModule,
+    PostGroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],

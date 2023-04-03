@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Document } from 'mongoose';
-import { Location } from './modules/post.location';
+import { Document, StringExpressionOperatorReturningBoolean } from 'mongoose';
 import { PostDate } from './modules/post.postdate';
 import { Outlay } from './modules/post.outlay';
 import { Weather } from './modules/post.weather';
-import { PostText } from './modules/post.text';
+import { Location } from './modules/post.location';
+import * as mongoosePaginate from 'mongoose-paginate-v2';
+import { deserializePostText, PostText } from './modules/post.text';
 import { defaultPreview, PostPreview } from './modules/post.preview';
 
 const options: SchemaOptions = {
@@ -16,7 +17,6 @@ const options: SchemaOptions = {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   id: true,
 };
-const DEFAULT_PREVIEW = '/img/logo.png';
 
 @Schema(options)
 export class Post extends Document {
@@ -47,7 +47,6 @@ export class Post extends Document {
   @Prop({
     require: true,
   })
-  @IsString()
   @IsNotEmpty()
   location: Location;
 
@@ -59,7 +58,6 @@ export class Post extends Document {
   @Prop({
     require: true,
   })
-  @IsString()
   @IsNotEmpty()
   dates: PostDate;
 
@@ -71,28 +69,27 @@ export class Post extends Document {
   @Prop({
     require: true,
   })
-  @IsString()
   @IsNotEmpty()
   outlay: Outlay[];
 
   @Prop({
     required: true,
   })
-  @IsString()
   weather: Weather;
 
   @Prop({
     required: true,
   })
-  @IsString()
   log: PostText[];
 
   @Prop({
     required: true,
     default: defaultPreview,
   })
-  @IsString()
   preview: PostPreview;
+
+  @Prop()
+  groupId: string;
 
   //* Let Redis Use This DTO
   //* Check redis-manager-service.ts
@@ -104,7 +101,8 @@ export class Post extends Document {
     location: Location;
     outlay: Outlay[];
     log: PostText[];
-    preview: string;
+    preview: PostPreview;
+    groupId: string;
   };
 
   readonly lightReadOnlyData: {
@@ -113,7 +111,8 @@ export class Post extends Document {
     title: string;
     dates: PostDate;
     location: Location;
-    preview: string;
+    preview: PostPreview;
+    groupId: string;
   };
 }
 
@@ -129,10 +128,13 @@ _PostSchema.virtual('readOnlyData').get(function (this: Post) {
     location: this.location,
     outlay: this.outlay,
     log: this.log,
+    groupId: this.groupId,
   };
 });
 
 _PostSchema.virtual('lightReadOnlyData').get(function (this: Post) {
+  const preview = deserializePostText(this.log[0]);
+
   return {
     id: this.id,
     owner: this.owner,
@@ -140,18 +142,20 @@ _PostSchema.virtual('lightReadOnlyData').get(function (this: Post) {
     title: this.title,
     dates: this.dates,
     location: this.location,
+    groupId: this.groupId,
   };
 });
 
 _PostSchema.set('toObject', { virtuals: true });
 _PostSchema.set('toJSON', { virtuals: true });
+_PostSchema.plugin(mongoosePaginate);
 
 export const PostSchema = _PostSchema;
 
 export interface PostReadOnly {
   id: string;
   owner: string;
-  preview: string;
+  preview: PostPreview;
   title: string;
   dates: PostDate;
   location: Location;
@@ -162,7 +166,7 @@ export interface PostReadOnly {
 export interface PostReadOnlyLight {
   id: string;
   owner: string;
-  preview: string;
+  preview: PostPreview;
   title: string;
   dates: PostDate;
   location: Location;

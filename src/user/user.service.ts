@@ -1,4 +1,4 @@
-import { UserMicroserviceDataWrapper } from './../common/data/user.microservice.dto';
+import { UserMicroserviceDataWrapper } from '../common/data/user.microservice.dto';
 import {
   HttpException,
   HttpStatus,

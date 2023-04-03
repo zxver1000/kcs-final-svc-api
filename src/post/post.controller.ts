@@ -17,6 +17,8 @@ import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { AuthService } from '../auth/service/auth.service';
 import { CurrentUser } from '../common/decorator/user.decorator';
+import { PostGroupCreateDto } from '../post-group/data/dto/post-group.create.dto';
+
 import { PostCreateDto } from './data/dto/post.create.dto';
 import { PostUpdateDto } from './data/dto/post.update.dto';
 
@@ -30,12 +32,22 @@ export class PostController {
   @Get(':postid')
   @UseGuards(JwtAuthGuard)
   async getPost(@Param('postid') postid: string, @CurrentUser() user) {
+    if (!user) {
+      return new UnauthorizedException('유저 정보를 확인해 주세요.');
+    }
+    this.logger.debug('getPost.post id', postid);
+
     return this.postService.getPersonalDiary(postid, user.id);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   async getPosts(@CurrentUser() user, @Query('pagenum') pagenum: number) {
+    if (!user) {
+      return new UnauthorizedException('유저 정보를 확인해 주세요.');
+    }
+    this.logger.debug('getPersonalDiaryList');
+
     return await this.postService.listDiaries(pagenum, user.id);
   }
 
@@ -52,23 +64,22 @@ export class PostController {
   }
   @Delete()
   @UseGuards(JwtAuthGuard)
-  async deletePersonalDiary(
-    @CurrentUser() user,
-    @Body('postid') postId: string[],
-  ) {
+  async deletePersonalDiary(@CurrentUser() user, @Body('id') postId: string[]) {
     if (!user) {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
+    this.logger.debug('deletePersonalDiary.postId', postId);
 
     return await this.postService.deletePersonalDiary(postId, user.id);
   }
 
   @Patch()
   @UseGuards(JwtAuthGuard)
-  async modifyPersonalDiary(@CurrentUser() user, @Body() data) {
+  async modifyPersonalDiary(@CurrentUser() user, @Body() data: PostUpdateDto) {
     if (!user) {
       return new UnauthorizedException('유저 정보를 확인해 주세요.');
     }
+
     this.logger.debug('modifyPersonalDiary.data', data);
     return await this.postService.modifyPersonalDiary(data.id, user.id, data);
   }
