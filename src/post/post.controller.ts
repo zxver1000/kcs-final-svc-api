@@ -37,6 +37,7 @@ export class PostController {
     }
     this.logger.debug('getPost.post id', postid);
 
+    console.log('???');
     return this.postService.getPersonalDiary(postid, user.id);
   }
 

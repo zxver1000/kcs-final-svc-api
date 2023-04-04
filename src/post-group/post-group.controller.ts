@@ -74,25 +74,6 @@ export class PostGroupController {
     return await this.postGroupService.addTrip(data, user.id);
   }
 
-  @Delete('posts')
-  @UseGuards(JwtAuthGuard)
-  async deletePostGroupInPost(
-    @CurrentUser() user,
-    @Body('id') postGroupId: string,
-    @Body('posts') posts: string[],
-  ) {
-    if (!user) {
-      return new UnauthorizedException('유저 정보를 확인해 주세요.');
-    }
-    this.logger.debug('deletePostGroup.postGroupId', postGroupId);
-
-    return await this.postGroupService.deletePostGroupInPost(
-      postGroupId,
-      user.id,
-      posts,
-    );
-  }
-
   @Delete()
   @UseGuards(JwtAuthGuard)
   async deletePostGroup(

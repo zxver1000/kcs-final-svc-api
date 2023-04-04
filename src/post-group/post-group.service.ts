@@ -52,37 +52,6 @@ export class PostGroupService {
     return result;
   }
 
-  async deletePostGroupInPost(
-    postGroupId: string,
-    userid: string,
-    posts: string[],
-  ): Promise<UserMicroserviceDataWrapper | number> {
-    const result = await lastValueFrom(
-      this.userClient
-        .send(
-          {
-            cmd: 'deletePostGroupInPost',
-          },
-          {
-            postGroupId,
-            userid,
-            posts,
-          },
-        )
-        .pipe(timeout(this.gatewayTimeout)),
-    );
-    if (!result) {
-      throw new InternalServerErrorException();
-    }
-
-    if (!result.success) {
-      if (result.code >= 400) {
-        throw new HttpException(HttpStatus[result.code], result.code);
-      }
-    }
-    return result;
-  }
-
   async addTrip(
     createData: object,
     userid: string,
