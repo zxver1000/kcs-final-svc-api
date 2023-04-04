@@ -65,7 +65,6 @@ export class PostGroupController {
       postGroupName,
       userid,
     );
-
     return result;
   }
 
@@ -79,21 +78,7 @@ export class PostGroupController {
     const result = await this.postGroupService.deleteTrip(postGroupId, userid);
     return result;
   }
-  @UseInterceptors(SuccessInterceptor(HttpStatus.OK))
-  @MessagePattern({ cmd: 'deletePostGroupInPost' })
-  async deletePostGroupInPost(
-    @Payload('postGroupId') postGroupId: string,
-    @Payload('userid') userid: string,
-    @Payload('posts') posts: string[],
-  ) {
-    this.logger.debug('delete postGroupId List', postGroupId);
-    const result = await this.postGroupService.deletePostGroupInPost(
-      postGroupId,
-      userid,
-      posts,
-    );
-    return result;
-  }
+
   @UseInterceptors(SuccessInterceptor(HttpStatus.OK))
   @MessagePattern({ cmd: 'modfiyPostGroup' })
   async modifyPostGroup(

@@ -50,6 +50,7 @@ export class PostRepository {
       if (post.location) target.location = post.location;
       if (post.log) target.log = post.log;
       if (post.outlay) target.outlay = post.outlay;
+
       if (post.title) target.title = post.title;
       if (post.weather) target.weather = post.weather;
       if (post.groupId) target.groupId = post.groupId;

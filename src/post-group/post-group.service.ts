@@ -97,24 +97,6 @@ export class PostGroupService {
     }
   }
 
-  async deletePostGroupInPost(
-    postGroupId: string,
-    userid: string,
-    posts: string[],
-  ): Promise<number> {
-    try {
-      await this.postGroupRepository.deletePostGroupInPost(
-        postGroupId,
-        userid,
-        posts,
-      );
-      return HttpStatus.OK;
-    } catch (e) {
-      this.logger.error(e.stack || e);
-      return HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-  }
-
   async deleteTrip(postGroupIds: string[], userId: string): Promise<number> {
     try {
       for (let i = 0; i < postGroupIds.length; i++) {

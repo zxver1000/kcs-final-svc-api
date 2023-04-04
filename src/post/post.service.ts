@@ -112,6 +112,7 @@ export class PostService {
   ): Promise<number> {
     try {
       for (let i = 0; i < postIds.length; i++) {
+        
         const post = await this.postRepository.getPost(postIds[i], userid);
         if (typeof post != 'number') {
           const result = await this.postRepository.deletePostFromDB(

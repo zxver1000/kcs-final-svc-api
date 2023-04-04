@@ -71,27 +71,22 @@ export class Post extends Document {
   @Prop({
     require: true,
   })
-  @IsString()
-  @IsNotEmpty()
   outlay: Outlay[];
 
   @Prop({
     required: true,
   })
-  @IsString()
   weather: Weather;
 
   @Prop({
     required: true,
   })
-  @IsString()
   log: PostText[];
 
   @Prop({
     required: true,
     default: defaultPreview,
   })
-  @IsString()
   preview: PostPreview;
 
   @Prop()

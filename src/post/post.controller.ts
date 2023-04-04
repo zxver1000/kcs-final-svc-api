@@ -58,7 +58,7 @@ export class PostController {
     @Payload('userid') userid: string,
   ) {
     this.logger.debug('delete post Postid ', postid);
-    console.log(postid);
+   
     const result = await this.postService.deletePersonalDiary(postid, userid);
 
     return result;

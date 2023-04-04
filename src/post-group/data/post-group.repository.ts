@@ -58,11 +58,7 @@ export class PostGroupRepository {
           let Post = await this.postModel.findById(postGroup.posts[i]);
           if (!Post) continue;
 
-          let findIdx = target.posts.findIndex(
-            (e) => String(e._id) === String(Post._id),
-          );
-
-          if (findIdx === -1 && Post !== null && Post.owner == userId) {
+          if (Post.owner === userId) {
             //없음 넣어야됨
             target.posts.unshift(Post);
           }
@@ -95,38 +91,6 @@ export class PostGroupRepository {
     const key = `${this.redisPrefixKey}/${postGroupId}`;
     await postGroup.delete();
     await this.redisService.deleteCache(key);
-    return HttpStatus.OK;
-  }
-
-  async deletePostGroupInPost(
-    postGroupId: string,
-    userId: string,
-    posts: string[],
-  ): Promise<number> {
-    const target = await this.postGroupModel.findById(postGroupId);
-
-    if (!target) return HttpStatus.NOT_FOUND;
-
-    if (userId !== target.owner) {
-      return HttpStatus.UNAUTHORIZED;
-    }
-
-    for (let i = 0; i < posts.length; i++) {
-      let Post = await this.postModel.findById(posts[i]);
-
-      if (!Post) continue;
-      let findIdx = target.posts.findIndex(
-        (e) => String(e._id) === String(Post._id),
-      );
-
-      if (findIdx !== -1 && Post.owner === userId) {
-        target.posts.splice(findIdx, 1);
-      }
-    }
-
-    const iKey = `${this.redisPrefixKey}/${postGroupId}`;
-    await this.redisService.deleteCache(iKey);
-    target.save();
     return HttpStatus.OK;
   }
 
